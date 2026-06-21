@@ -1,0 +1,15 @@
+[Unit]
+Description=VN-MDM Next.js Frontend
+After=network.target vnmdm-backend.service
+
+[Service]
+Type=simple
+User=qa
+WorkingDirectory=/home/qa/vn-mdm/web
+Environment="NODE_ENV=development"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/usr/bin/npm run dev -- -p 3001 -H 127.0.0.1
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
