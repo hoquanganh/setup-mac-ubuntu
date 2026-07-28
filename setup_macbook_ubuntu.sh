@@ -287,7 +287,32 @@ else
   log "kubelogin already installed. Skipping."
 fi
 
-log "Phase 4 complete. DevOps tools installed."
+# 4e. Tailscale (private VPN for remote access)
+if ! command -v tailscale &>/dev/null; then
+  log "Installing Tailscale..."
+  curl -fsSL https://tailscale.com/install.sh | sh
+else
+  log "Tailscale already installed. Checking for updates..."
+  apt install -y tailscale || true
+fi
+
+# 4f. ngrok (public tunnel for demo / sharing)
+if ! command -v ngrok &>/dev/null; then
+  log "Installing ngrok..."
+  if [ ! -f /etc/apt/sources.list.d/ngrok.list ]; then
+    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+      | gpg --dearmor | tee /etc/apt/trusted.gpg.d/ngrok.gpg >/dev/null
+    echo "deb [signed-by=/etc/apt/trusted.gpg.d/ngrok.gpg] https://ngrok-agent.s3.amazonaws.com bookworm main" \
+      | tee /etc/apt/sources.list.d/ngrok.list
+    apt update
+  fi
+  apt install -y ngrok
+else
+  log "ngrok already installed. Checking for updates..."
+  apt install -y ngrok || true
+fi
+
+log "Phase 4 complete. DevOps & remote access tools installed."
 
 ###############################################################################
 # PHASE 5: Verify Everything
@@ -310,6 +335,8 @@ echo "  gh:          $(gh --version 2>/dev/null | head -1 || echo 'NOT FOUND')"
 echo "  Azure CLI:   $(az --version 2>/dev/null | head -1 || echo 'NOT FOUND')"
 echo "  kubectl:     $(kubectl version --client --short 2>/dev/null || echo 'NOT FOUND')"
 echo "  kubelogin:   $(kubelogin --version 2>/dev/null || echo 'NOT FOUND')"
+echo "  Tailscale:   $(tailscale version 2>/dev/null | head -1 || echo 'NOT FOUND')"
+echo "  ngrok:       $(ngrok version 2>/dev/null | head -1 || echo 'NOT FOUND')"
 echo ""
 
 log "============================================="
@@ -320,8 +347,12 @@ log "IMPORTANT: If this is a fresh install, you MUST REBOOT to activate the T2 k
 log "After reboot, the internal keyboard, trackpad, audio, and Wi-Fi will all work."
 log ""
 log "Manual steps still needed after script:"
-log "  1. 'gh auth login'           — Authenticate GitHub CLI"
-log "  2. 'az login'                — Authenticate Azure CLI"
-log "  3. Copy ~/.ssh keys          — For git clone access"
-log "  4. Copy ~/.azure & ~/.kube   — For Kubernetes access"
+log "  1. 'gh auth login'                  — Authenticate GitHub CLI"
+log "  2. 'az login'                       — Authenticate Azure CLI"
+log "  3. 'sudo tailscale up'              — Authenticate Tailscale VPN"
+log "  4. 'ngrok config add-authtoken ...' — Authenticate ngrok (get token from dashboard)"
+log "  5. Copy ~/.ssh keys                 — For git clone access"
+log "  6. Copy ~/.azure & ~/.kube          — For Kubernetes access"
+log ""
+log "Remote access docs: server-setup/remote_access_tools.md"
 log ""

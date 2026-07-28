@@ -35,3 +35,9 @@ This file tracks the setup progress to ensure continuity across sessions.
 *   `systemctl restart nginx` - **Status: DONE**
 
 System is successfully running and proxying requests.
+
+## Phase 8: Remote Access Tools (Tailscale, ngrok) 📝
+*   Tailscale: `curl -fsSL https://tailscale.com/install.sh | sh` + `sudo tailscale up` - **Status: Tailscale installed & authenticated**
+*   ngrok: apt repo + `sudo apt install -y ngrok` + `ngrok config add-authtoken <token>` - **Status: TODO (doc added)**
+*   Expose VN-MDM: `ngrok http 80` - **Status: on-demand**
+*   Full guide: `server-setup/remote_access_tools.md`

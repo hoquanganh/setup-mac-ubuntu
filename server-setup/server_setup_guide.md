@@ -60,11 +60,32 @@ Tất cả các dịch vụ đã được thiết lập để tự động khở
 
 ## 7. Truy Cập Từ Xa (Khác mạng WiFi / Qua 4G)
 
-Vì IP tĩnh của nhà không cố định và khó cấu hình mở port Router, giải pháp tối ưu, an toàn và dễ nhất là sử dụng mạng riêng ảo **Tailscale**:
+Xem danh sách đầy đủ tại **`remote_access_tools.md`**. Tóm tắt hai phương án chính:
 
-1. Mở link này trên trình duyệt để xác thực Server với tài khoản Tailscale của bạn: [https://login.tailscale.com/a/c5c5b401a86f](https://login.tailscale.com/a/c5c5b401a86f) (Đăng nhập bằng Google/GitHub).
-2. Cài đặt app **Tailscale** trên máy tính khác hoặc điện thoại của bạn và đăng nhập cùng tài khoản đó.
-3. Trong app Tailscale, bạn sẽ thấy thiết bị tên `qa-MacBookPro15-2` kèm theo một IP cố định (ví dụ `100.x.y.z`).
-4. Từ nay về sau, ở bất kỳ đâu có Internet, bạn có thể:
-   - Truy cập Web: Vào trình duyệt gõ IP Tailscale `http://100.x.y.z`
-   - SSH vào máy: `ssh qa@100.x.y.z`
+### Tailscale — VPN riêng (khuyến nghị)
+
+1. Cài đặt (nếu chưa có): `curl -fsSL https://tailscale.com/install.sh | sh`
+2. Xác thực: `sudo tailscale up` → đăng nhập Google/GitHub trên trình duyệt.
+3. Trên máy khác: cài app Tailscale, đăng nhập cùng tài khoản.
+4. Truy cập qua IP ảo `100.x.y.z`:
+   - Web: `http://100.x.y.z`
+   - SSH: `ssh qa@100.x.y.z`
+
+### ngrok — Tunnel công khai (demo / chia sẻ tạm)
+
+Dùng khi cần cho người không có Tailscale truy cập VN-MDM qua Internet.
+
+1. Cài đặt:
+   ```bash
+   curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+     | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+   echo "deb https://ngrok-agent.s3.amazonaws.com bookworm main" \
+     | sudo tee /etc/apt/sources.list.d/ngrok.list
+   sudo apt update && sudo apt install -y ngrok
+   ```
+2. Lấy authtoken tại [dashboard.ngrok.com/get-started/your-authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
+3. Xác thực: `ngrok config add-authtoken <YOUR_AUTHTOKEN>`
+4. Expose VN-MDM (Nginx port 80): `ngrok http 80`
+5. Gửi URL `https://xxxx.ngrok-free.app` cho người cần truy cập.
+
+> **Lưu ý:** ngrok tạo URL công khai — chỉ bật khi cần demo, tắt khi không dùng.

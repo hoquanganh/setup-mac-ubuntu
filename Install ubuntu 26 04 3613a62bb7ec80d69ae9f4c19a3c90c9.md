@@ -190,6 +190,33 @@ download and install: [https://www.warp.dev](https://www.warp.dev/)
     ? How would you like to authenticate GitHub CLI? Login with a web browser
     ```
     
+- Tailscale (VPN — truy cập riêng tư từ xa)
+    
+    ```bash
+    curl -fsSL https://tailscale.com/install.sh | sh
+    sudo tailscale up
+    tailscale status
+    # Web: http://100.x.y.z  |  SSH: ssh qa@100.x.y.z
+    ```
+    
+- ngrok (tunnel công khai — demo / chia sẻ tạm)
+    
+    ```bash
+    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+      | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+    echo "deb https://ngrok-agent.s3.amazonaws.com bookworm main" \
+      | sudo tee /etc/apt/sources.list.d/ngrok.list
+    sudo apt update && sudo apt install -y ngrok
+    
+    # Lấy token tại: https://dashboard.ngrok.com/get-started/your-authtoken
+    ngrok config add-authtoken <YOUR_AUTHTOKEN>
+    
+    # Expose VN-MDM qua Nginx (port 80)
+    ngrok http 80
+    ```
+    
+    Xem thêm: `server-setup/remote_access_tools.md`
+    
 - mysql 8.4
     
     <aside>
