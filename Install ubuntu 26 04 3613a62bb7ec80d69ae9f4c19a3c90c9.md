@@ -11,6 +11,15 @@ download and install: [https://www.warp.dev](https://www.warp.dev/)
     
     Log off (user) > settings > keyboard > add language
     
+- vim (full package; Ubuntu default is vim-tiny)
+    
+    ```bash
+    sudo apt update
+    sudo apt install -y vim
+    vim --version
+    which vim   # should be /usr/bin/vim, not /usr/bin/vim.tiny
+    ```
+    
 - zsh
     
     ```ruby

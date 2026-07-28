@@ -87,7 +87,7 @@ fi
 log "Phase 1 complete. T2 drivers installed."
 
 ###############################################################################
-# PHASE 2: System Utilities (Chrome, Vietnamese Input, Zsh)
+# PHASE 2: System Utilities (Chrome, Vietnamese Input, Zsh, Vim)
 ###############################################################################
 log "=== PHASE 2: System Utilities ==="
 
@@ -110,7 +110,15 @@ else
   log "ibus-unikey already installed. Skipping."
 fi
 
-# 2c. Zsh
+# 2c. Vim (full package; Ubuntu ships vim-tiny by default)
+if ! dpkg -l vim 2>/dev/null | grep -q '^ii'; then
+  log "Installing Vim (replacing vim-tiny)..."
+else
+  log "Vim already installed. Checking for updates..."
+fi
+apt install -y vim
+
+# 2d. Zsh
 if ! command -v zsh &>/dev/null; then
   log "Installing Zsh..."
   apt install -y zsh
@@ -121,7 +129,7 @@ if ! grep -q "zsh" /etc/passwd | grep -q "$REAL_USER"; then
   chsh -s "$(which zsh)" "$REAL_USER" || true
 fi
 
-# 2d. Cleanup
+# 2e. Cleanup
 apt autoremove -y
 
 log "Phase 2 complete. System utilities installed."
@@ -288,6 +296,7 @@ log "=== PHASE 5: Verification ==="
 echo ""
 echo "  Kernel:      $(uname -r)"
 echo "  Chrome:      $(google-chrome --version 2>/dev/null || echo 'NOT FOUND')"
+echo "  Vim:         $(vim --version 2>/dev/null | head -1 || echo 'NOT FOUND')"
 echo "  Zsh:         $(zsh --version 2>/dev/null || echo 'NOT FOUND')"
 echo "  Node.js:     $(node -v 2>/dev/null || echo 'NOT FOUND')"
 echo "  npm:         $(npm -v 2>/dev/null || echo 'NOT FOUND')"

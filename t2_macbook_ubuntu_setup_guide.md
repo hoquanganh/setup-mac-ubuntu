@@ -79,3 +79,19 @@ Because Apple's Wi-Fi and Bluetooth firmware blobs are proprietary, they cannot 
    *(Note: This process may take a few minutes as it downloads a 500MB+ recovery image from Apple and unpacks it.)*
 
 Once the script completes, it will automatically load the extracted firmware, and your internal Wi-Fi and Bluetooth should immediately become active and available in your network settings! You can safely disconnect your USB Wi-Fi dongle or tether.
+
+---
+
+## Step 5: Install Full Vim (Optional but Recommended)
+
+Ubuntu 26.04 installs `vim-tiny` by default — a minimal build without syntax highlighting, mouse support, or many standard features. Install the full `vim` package for a proper editor experience:
+
+```bash
+sudo apt update
+sudo apt install -y vim
+vim --version
+```
+
+Verify that `which vim` points to `/usr/bin/vim` (not `/usr/bin/vim.tiny`).
+
+> **Note:** The automated setup script (`setup_macbook_ubuntu.sh`) handles this in Phase 2.

@@ -16,7 +16,7 @@ Dự án này lưu trữ toàn bộ tài liệu, script, và cấu hình để t
 ### 1. Cài Đặt Ubuntu & Xử Lý Driver (MacBook T2)
 Vì phần cứng T2 của Apple rất đặc thù, các script và tài liệu hướng dẫn cài đặt driver gốc được lưu trữ trực tiếp tại thư mục gốc của dự án này:
 *   📜 **`t2_macbook_ubuntu_setup_guide.md`**: Tài liệu Hướng dẫn chi tiết từng bước cách cài Ubuntu và fix lỗi driver cho dòng máy MacBook T2.
-*   🚀 **`setup_macbook_ubuntu.sh`**: Script tự động hóa cài đặt các dependencies và driver (Keyboard, Touchpad, Audio, Wi-Fi...).
+*   🚀 **`setup_macbook_ubuntu.sh`**: Script tự động hóa cài đặt các dependencies và driver (Keyboard, Touchpad, Audio, Wi-Fi, Vim, Zsh...).
 *   📑 **`Install ubuntu 26 04 3613a62bb7ec80d69ae9f4c19a3c90c9.md`**: Ghi chú cá nhân chi tiết trong lúc cài đặt máy ban đầu.
 
 ### 2. Thiết Lập Môi Trường Server & Ứng Dụng (vn-mdm)
