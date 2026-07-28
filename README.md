@@ -1,54 +1,70 @@
-# MacBook Pro T2 (Ubuntu 26) - Home Server Project
+# 🚀 Universal Home Server Framework (Ubuntu)
 
-## 🎯 Mục Đích Của Dự Án
-Dự án này lưu trữ toàn bộ tài liệu, script, và cấu hình để tái sử dụng lại (re-provision) một chiếc MacBook Pro 2018 (Chip T2) đã được cài đặt Ubuntu 26.04 LTS. Mục đích cuối cùng là biến chiếc Laptop này thành một Web Server hoạt động liên tục 24/7 để chạy dự án **VN-MDM** (gồm Rails Backend và Next.js Frontend) trong môi trường mạng gia đình.
+Dự án này cung cấp hệ thống tự động hóa cài đặt, cấu hình và quản lý **Home Server 24/7** trên nền tảng Ubuntu Linux. Hỗ trợ đa dạng phần cứng từ **MacBook Pro T2**, **Laptop thông thường**, **Desktop PC**, **Intel NUC** đến **Cloud VPS**.
 
-## 📋 Các Nhiệm Vụ Chính Đã Hoàn Thành
-1. **Cài đặt Hệ điều hành & Driver:** Cài đặt Ubuntu 26.04 lên phần cứng đặc thù của Apple (MacBook Pro 15,2) và khắc phục các vấn đề tương thích driver (Bàn phím, Touchpad, Âm thanh, Bluetooth, và đặc biệt là card WiFi Broadcom).
-2. **Tối ưu Server:** Thiết lập Power Management (cho phép gập màn hình không bị sleep), thiết lập SSH Server.
-3. **Triển khai Hệ thống (CI/CD Local):** Thiết lập môi trường chạy ứng dụng (`Ruby`, `Node.js`, `PostgreSQL`, `Redis`), cấu hình `Nginx` Reverse Proxy, và tạo `systemd` services để duy trì uptime 24/7.
-4. **Kết Nối Từ Xa:** Cấu hình **Tailscale** (VPN riêng) và **ngrok** (tunnel công khai) để truy cập server từ bất kỳ đâu mà không cần IP tĩnh hay mở port Router.
+Mục đích chính là biến chiếc máy tính gia đình thành một Server tin cậy để **host nhiều ứng dụng đồng thời** (Rails, Next.js, Docker, Python, Go...), có thể truy cập ổn định từ mạng Wi-Fi nội bộ (LAN) cũng như từ xa qua Internet (WAN / VPN).
 
 ---
 
-## 📚 Hướng Dẫn Từng Phần (Tham Khảo Nhanh)
+## 🎯 Tính Năng Nổi Bật
 
-### 1. Cài Đặt Ubuntu & Xử Lý Driver (MacBook T2)
-Vì phần cứng T2 của Apple rất đặc thù, các script và tài liệu hướng dẫn cài đặt driver gốc được lưu trữ trực tiếp tại thư mục gốc của dự án này:
-*   📜 **`t2_macbook_ubuntu_setup_guide.md`**: Tài liệu Hướng dẫn chi tiết từng bước cách cài Ubuntu và fix lỗi driver cho dòng máy MacBook T2.
-*   🚀 **`setup_macbook_ubuntu.sh`**: Script tự động hóa cài đặt các dependencies, driver (Keyboard, Touchpad, Audio, Wi-Fi, Vim, Zsh...) và remote access tools (Tailscale, ngrok).
-*   📑 **`Install ubuntu 26 04 3613a62bb7ec80d69ae9f4c19a3c90c9.md`**: Ghi chú cá nhân chi tiết trong lúc cài đặt máy ban đầu.
+* ⚡ **Cài đặt 1-Click End-to-End (`./bin/setup.sh`):** Tự động cài từ A-Z sau khi cài xong Ubuntu.
+* 🤖 **Tối ưu cho AI Agent (Antigravity, Cursor, Gemini CLI):** Tự động phát hiện phần cứng, chạy non-interactive, có đầy đủ Agent Rules & Skills ([`AGENTS.md`](file://AGENTS.md)).
+* 💻 **Hỗ trợ Đa Phần Cứng (Hardware Profiles):**
+  * **MacBook T2 Chip (2018-2020):** Tự động tích hợp kernel `linux-t2`, driver bàn phím/trackpad và giải nén Wi-Fi firmware.
+  * **Laptop:** Tự động tắt chế độ Sleep/Suspend khi gập màn hình (Lid close 24/7).
+  * **Generic PC / NUC / VPS:** Tối ưu hóa gói dịch vụ nền tảng.
+* 🌐 **Định Tuyến Đa Dự Án (Multi-Project Hosting):** Dùng Nginx Reverse Proxy điều phối giao thông cho nhiều ứng dụng chạy trên cùng 1 server.
+* 🔑 **Kết Nối Từ Xa An Toàn:** Tích hợp sẵn Avahi (`.local`), Tailscale (VPN Mesh riêng tư) và ngrok (Public Tunnel).
 
-### 2. Thiết Lập Môi Trường Server & Ứng Dụng (vn-mdm)
-Mọi tài liệu liên quan đến cấu hình hệ thống web server (sau khi máy đã nhận đủ driver) được đặt trong thư mục `server-setup/`:
-*   📘 **`server-setup/server_setup_guide.md`**: Tài liệu **QUAN TRỌNG NHẤT** hướng dẫn tổng quan về kiến trúc Nginx, Systemd, và cách ứng dụng `~/vn-mdm` đang hoạt động. Bạn nên đọc file này để hiểu cách vận hành.
-*   🌐 **`server-setup/remote_access_tools.md`**: Danh sách và hướng dẫn cài đặt các tool kết nối từ xa (Avahi, SSH, Tailscale, ngrok).
-*   📝 **`server-setup/commands_history.md`**: Lịch sử chi tiết toàn bộ các lệnh CLI đã chạy để cài đặt Nginx, PostgreSQL, Redis và Systemd. Cực kỳ hữu ích nếu bạn cần cài lại máy từ đầu.
-*   ⚙️ **Các file cấu hình chuẩn:** `vnmdm.nginx.conf`, `vnmdm-frontend.service`, `vnmdm-backend.service` là các file config gốc đã được đẩy vào `/etc/nginx` và `/etc/systemd`.
+---
 
-### 3. Vận Hành Ứng Dụng Chạy Nền 24/7
-Dự án **VN-MDM** (nằm ở `~/vn-mdm`) đã được daemonize bằng `systemd`. Máy tự động chạy các services sau khi khởi động:
-*   **Backend (Rails - Port 3000):** `sudo systemctl status vnmdm-backend`
-*   **Frontend (Next.js - Port 3001):** `sudo systemctl status vnmdm-frontend`
-*   **Reverse Proxy (Nginx - Port 80):** `sudo systemctl status nginx`
+## 🏗️ Kiến Trúc Hệ Thống
 
-### 4. Hướng Dẫn Kết Nối (Local & Remote)
+```mermaid
+graph TD
+    UserLAN[Người dùng WiFi nội bộ] -->|qa-MacBookPro15-2.local| Nginx[Nginx Reverse Proxy :80]
+    UserWAN[Người dùng 4G / Internet] -->|Tailscale / ngrok / Cloudflare| Nginx
+    
+    subgraph Server Infrastructure
+        Nginx -->|/api| App1_BE[VN-MDM Rails Backend :3000]
+        Nginx -->|/| App1_FE[VN-MDM Next.js Frontend :3001]
+        Nginx -->|app2.local| App2[Docker / Custom Web App :8080]
+        
+        App1_BE --> PostgreSQL[(PostgreSQL 18)]
+        App1_BE --> Redis[(Redis 7)]
+        App1_BE --> MongoDB[(MongoDB 7)]
+    end
+```
 
-#### Kết nối cùng mạng WiFi (Local)
-Do máy cài đặt `avahi-daemon`, IP tĩnh không còn bắt buộc. Bạn có thể truy cập bằng tên miền nội bộ (`.local`):
-*   **Web Frontend:** Truy cập `http://qa-MacBookPro15-2.local` trên trình duyệt.
-*   **SSH Terminal:** `ssh qa@qa-MacBookPro15-2.local`
+---
 
-#### Kết nối từ xa (Khác mạng, 4G, v.v...)
+## ⚡ Quickstart (Cho Người Dùng)
 
-**Tailscale** — VPN riêng (khuyến nghị cho truy cập hàng ngày):
-1.  Cài và xác thực trên Server: `sudo tailscale up`
-2.  Tải app Tailscale trên máy/điện thoại khác, đăng nhập cùng tài khoản.
-3.  Dùng IP ảo `100.x.y.z` để SSH (`ssh qa@100.x.y.z`) hoặc truy cập Web (`http://100.x.y.z`).
+Sau khi cài đặt hệ điều hành Ubuntu mới, mở Terminal và chạy:
 
-**ngrok** — Tunnel công khai (cho demo / chia sẻ tạm):
-1.  Lấy authtoken tại [dashboard.ngrok.com](https://dashboard.ngrok.com/get-started/your-authtoken)
-2.  `ngrok config add-authtoken <token>`
-3.  `ngrok http 80` → nhận URL dạng `https://xxxx.ngrok-free.app`
+```bash
+cd ~/Documents/Ubuntu_install
+sudo ./bin/setup.sh --auto
+```
 
-Chi tiết đầy đủ: **`server-setup/remote_access_tools.md`**
+Và thế là xong! Máy của bạn đã trở thành một Web Server hoạt động 24/7.
+
+---
+
+## 📚 Hệ Thống Tài Liệu (Documentation)
+
+### 🧑‍💻 Tài liệu dành cho Người Dùng (Human User)
+* 🚀 **[Hướng dẫn Nhanh (Quickstart)](file://docs/QUICKSTART.md)**: Các bước cơ bản để cài máy và truy cập.
+* 💻 **[Hướng dẫn Cấu hình Phần cứng (Hardware Guide)](file://docs/HARDWARE_GUIDE.md)**: Chi tiết cấu hình MacBook T2, Laptop, PC.
+* 🌐 **[Host Nhiều Dự Án (Multi-Project Hosting)](file://docs/MULTI_PROJECT_HOSTING.md)**: Cách thêm dự án web thứ 2, thứ 3 vào server.
+* 🔑 **[Kết Nối Từ Xa (Remote Access)](file://docs/REMOTE_ACCESS.md)**: Hướng dẫn Tailscale, ngrok, Avahi mDNS.
+* 🛠️ **[Xử Lý Lỗi (Troubleshooting)](file://docs/TROUBLESHOOTING.md)**: Các lỗi thường gặp và cách khắc phục.
+
+### 🤖 Tài liệu dành cho AI Agent
+* 🤖 **[Master Agent Guide (`AGENTS.md`)](file://AGENTS.md)**: Quy chuẩn và bộ kỹ năng cho AI Agent.
+* 🧠 **Agent Skills Index:**
+  * [System Setup Skill](file://.agent/skills/system_setup/SKILL.md)
+  * [Server Infrastructure Skill](file://.agent/skills/server_infrastructure/SKILL.md)
+  * [Remote Access Skill](file://.agent/skills/remote_access/SKILL.md)
+  * [Multi-Project Hosting Skill](file://.agent/skills/multi_project_hosting/SKILL.md)
