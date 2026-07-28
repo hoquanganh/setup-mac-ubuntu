@@ -71,16 +71,12 @@ WantedBy=multi-user.target
 1. Real Apple devices **refuse HTTP**; enrollment profiles and checkin URLs must use HTTPS.
 2. Obtain current ngrok HTTPS URL:
    ```bash
-   curl -sf http://127.0.0.1:4040/api/tunnels | python3 -c "
-   import sys, json
-   for t in json.load(sys.stdin).get('tunnels', []):
-       if t.get('proto') == 'https': print(t['public_url'].rstrip('/'))
-   "
+   curl -sf http://127.0.0.1:4040/api/tunnels | python3 -c "import sys, json; s=sys.stdin.read().strip(); print(next((t['public_url'] for t in json.loads(s).get('tunnels', []) if t.get('proto')=='https'), '') if s else '')"
    ```
 3. Update ADE configuration & profile URLs when ngrok changes:
    ```bash
    cd /home/qa/vn-mdm/api
-   MDM_SERVER_URL=$(cat tmp/.ngrok_url) IMPORT_TOKEN=1 FORCE_TOKEN=1 CUSTOMER_ALIAS=test1 bundle exec rails runner script/refresh_ade_config.rb
+   MDM_SERVER_URL=$(curl -sf http://127.0.0.1:4040/api/tunnels | python3 -c "import sys, json; s=sys.stdin.read().strip(); print(next((t['public_url'] for t in json.loads(s).get('tunnels', []) if t.get('proto')=='https'), '') if s else '')") IMPORT_TOKEN=1 FORCE_TOKEN=1 CUSTOMER_ALIAS=test1 bundle exec rails runner script/refresh_ade_config.rb
    ```
 
 ---

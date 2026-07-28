@@ -1,0 +1,13 @@
+[Unit]
+Description=ngrok Tunnel for VN-MDM Home Server
+After=network.target nginx.service
+
+[Service]
+Type=simple
+User=qa
+ExecStart=/usr/local/bin/ngrok http 80 --log=stdout
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
