@@ -1,0 +1,15 @@
+[Unit]
+Description=VN-MDM Solid Queue Worker (APNs Push & Background Jobs)
+After=network.target postgresql.service redis-server.service vnmdm-backend.service
+
+[Service]
+Type=simple
+User=qa
+WorkingDirectory=/home/qa/vn-mdm/api
+Environment="RAILS_ENV=development"
+Environment="PATH=/home/qa/.rbenv/shims:/home/qa/.rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/qa/.rbenv/shims/bundle exec bin/jobs
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

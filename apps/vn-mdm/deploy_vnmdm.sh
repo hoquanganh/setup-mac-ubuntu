@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# App Deployment Script: VN-MDM (Rails API + Next.js Web)
+# App Deployment Script: VN-MDM (Rails API + Worker + Next.js Web)
 ###############################################################################
 set -e
 
@@ -35,15 +35,18 @@ nginx -t
 log "Deploying Systemd Services..."
 cp "$SCRIPT_DIR/vnmdm-backend.service" /etc/systemd/system/
 cp "$SCRIPT_DIR/vnmdm-frontend.service" /etc/systemd/system/
+cp "$SCRIPT_DIR/vnmdm-worker.service" /etc/systemd/system/
 
 systemctl daemon-reload
-systemctl enable vnmdm-backend vnmdm-frontend nginx
+systemctl enable vnmdm-backend vnmdm-frontend vnmdm-worker nginx
 systemctl restart nginx || true
 systemctl restart vnmdm-backend || true
+systemctl restart vnmdm-worker || true
 systemctl restart vnmdm-frontend || true
 
 log "VN-MDM deployed and running."
 log "Status check:"
 systemctl status vnmdm-backend --no-pager | head -n 5
+systemctl status vnmdm-worker --no-pager | head -n 5
 systemctl status vnmdm-frontend --no-pager | head -n 5
 systemctl status nginx --no-pager | head -n 5

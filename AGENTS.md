@@ -19,6 +19,7 @@ When an AI Agent (Antigravity, Gemini CLI, Cursor, Claude Code, etc.) is asked t
 | [Server Infrastructure Skill](file://.agent/skills/server_infrastructure/SKILL.md) | PostgreSQL, Redis, MySQL, MongoDB, Node.js, Ruby, Docker, Nginx, UFW | Installing or troubleshooting database/runtime daemons |
 | [Remote Access Skill](file://.agent/skills/remote_access/SKILL.md) | Avahi mDNS (`.local`), OpenSSH, Tailscale VPN, ngrok, Cloudflare Tunnels | Setting up or debugging local & remote connectivity |
 | [Multi-Project Hosting Skill](file://.agent/skills/multi_project_hosting/SKILL.md) | Nginx VirtualHosts, reverse proxies, multi-app path/domain routing | Adding a new project to host on this server |
+| [VN-MDM Live Server Setup Skill](file://.agent/skills/vn_mdm_server_setup/SKILL.md) | Deploying & configuring VN-MDM for real iOS/macOS device enrollment (APNs, ADE, ABM, ngrok HTTPS) | Setting up or debugging real device MDM enrollment & APNs push |
 
 ## 🚀 End-to-End One-Command Agent Setup
 
