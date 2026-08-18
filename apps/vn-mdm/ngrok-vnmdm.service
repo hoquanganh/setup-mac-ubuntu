@@ -1,13 +1,19 @@
 [Unit]
-Description=ngrok Tunnel for VN-MDM Home Server
-After=network.target nginx.service
+Description=ngrok HTTPS Tunnel for VN-MDM Home Server
+After=network-online.target nginx.service
+Wants=network-online.target
 
 [Service]
 Type=simple
 User=qa
-ExecStart=/usr/local/bin/ngrok http 80 --log=stdout
-Restart=always
-RestartSec=5
+# Reads authtoken from ~/.config/ngrok/ngrok.yml (already configured)
+# Uses --domain to keep the same URL across restarts (free static domain from ngrok dashboard)
+# If no static domain configured yet, remove --domain flag and URL will change each restart
+ExecStart=/usr/local/bin/ngrok http 80 --log=stdout --domain=deviancy-viable-gatherer.ngrok-free.dev
+Restart=on-failure
+RestartSec=10
+StartLimitIntervalSec=60
+StartLimitBurst=5
 
 [Install]
 WantedBy=multi-user.target
