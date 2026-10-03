@@ -1,22 +1,25 @@
-# 🖥️ Machine Runbook: Lenovo Desktop — Ubuntu 24.04 (Dev Workstation + VN-MDM)
+# 🖥️ Machine Runbook: Lenovo ThinkCentre M910q — Ubuntu 24.04 (Dev Workstation + VN-MDM)
 
-Tài liệu này hướng dẫn từng bước thiết lập một máy bàn **Lenovo Desktop** (hoặc Generic PC) cài mới **Ubuntu 24.04 LTS** thành một máy trạm lập trình (Developer Workstation) và triển khai dự án **VN-MDM** (hỗ trợ cả 2 chế độ: **Docker** hoặc **Native Systemd**).
+Tài liệu này hướng dẫn từng bước thiết lập một máy bàn **Lenovo ThinkCentre M910q** (hoặc Generic PC) chạy **Ubuntu 24.04 LTS** thành một máy trạm lập trình (Developer Workstation) và triển khai dự án **VN-MDM** (hỗ trợ cả 2 chế độ: **Native Systemd** khuyên dùng hoặc **Docker**).
 
 ---
 
 ## ⚡ Thiết Lập 1-Click (Automated Setup)
 
-Sau khi cài mới Ubuntu 24.04 trên máy Lenovo, mở Terminal và chạy:
+Sau khi cài mới Ubuntu 24.04 trên máy Lenovo M910q, mở Terminal và chạy:
 
 ```bash
-git clone https://github.com/hoquanganh/setup-mac-ubuntu.git ~/Documents/Ubuntu_install
-cd ~/Documents/Ubuntu_install
+git clone https://github.com/hoquanganh/setup-mac-ubuntu.git ~/dev/setup-mac-ubuntu
+cd ~/dev/setup-mac-ubuntu
 
-# Tùy chọn 1: Cài trọn gói Dev Workstation + VN-MDM qua Docker (Khuyên dùng cho máy dev)
-sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn-mdm --app-mode=docker
+# Tùy chọn 1: Cài trọn gói Dev Workstation + VN-MDM Native Systemd (KHUYÊN DÙNG cho M910q để tiết kiệm RAM & CPU)
+sudo ./bin/setup.sh --hardware=desktop-lenovo-m910q --profile=dev-workstation --app=vn-mdm --app-mode=native
 
-# Tùy chọn 2: Cài trọn gói Dev Workstation + VN-MDM Native Systemd (Tương tự máy MacBook)
-sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn-mdm --app-mode=native
+# Tùy chọn 2: Chạy kiểm tra & khôi phục môi trường idempotent riêng cho M910q (kiểm tra trước khi cài)
+sudo bash hardware/desktop-lenovo-m910q/setup_m910q_environment.sh
+
+# Tùy chọn 3: Chạy VN-MDM qua Docker Compose (Nếu muốn cô lập container)
+sudo ./bin/setup.sh --hardware=desktop-lenovo-m910q --profile=dev-workstation --app=vn-mdm --app-mode=docker
 ```
 
 ---

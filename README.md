@@ -17,13 +17,13 @@ sudo ./bin/restore_current_machine.sh
 ```
 *Tự động 100%: Driver T2, Wi-Fi firmware, chống sleep gập nắp, PostgreSQL, Redis, Node, Ruby, Nginx reverse proxy, 4 dịch vụ VN-MDM systemd và ngrok sync.*
 
-### 2. Cài máy bàn Lenovo Desktop mới (Ubuntu 24.04 Dev + VN-MDM)
+### 2. Cài máy bàn Lenovo ThinkCentre M910q (Ubuntu 24.04 Dev + VN-MDM)
 ```bash
-# Chạy VN-MDM qua Docker Compose (Khuyên dùng):
-sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn-mdm --app-mode=docker
+# Chạy VN-MDM Native Systemd (Khuyên dùng cho M910q để tiết kiệm RAM & CPU):
+sudo ./bin/setup.sh --hardware=desktop-lenovo-m910q --profile=dev-workstation --app=vn-mdm --app-mode=native
 
-# Hoặc chạy Native Systemd:
-sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn-mdm --app-mode=native
+# Hoặc chạy kiểm tra & phục hồi cấu hình idempotent riêng cho M910q:
+sudo bash hardware/desktop-lenovo-m910q/setup_m910q_environment.sh
 ```
 
 ### 3. Cài lại máy MacBook với hệ điều hành macOS để lập trình Rails
@@ -55,7 +55,7 @@ sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn
 │
 ├── hardware/                         # Tối ưu hóa theo dòng máy phần cứng
 │   ├── macbook-t2/                   # Kernel linux-t2, audio config, Apple Wi-Fi firmware
-│   ├── desktop-lenovo/               # Lenovo ThinkCentre / Generic PC keepalive & optimizations
+│   ├── desktop-lenovo-m910q/         # Lenovo ThinkCentre M910q keepalive, inventory & automated restore
 │   └── laptop-power/                 # Chống sleep khi gập màn hình (Lid close 24/7)
 │
 ├── apps/                             # Cấu hình dự án web

@@ -15,13 +15,13 @@ Hệ thống được thiết kế theo dạng mô-đun (Modular), hỗ trợ nh
 
 ---
 
-## 2. Máy Tính Bàn (Desktop PC / Lenovo ThinkCentre / Intel NUC)
+## 2. Máy Tính Bàn (Lenovo ThinkCentre M910q / Desktop PC / Intel NUC)
 * **Đặc điểm:** Thường có card mạng có dây Ethernet Gigabit, cấu hình CPU cao, RAM lớn.
-* **Tự động cấu hình:** Script `hardware/desktop-lenovo/configure_desktop.sh` sẽ:
+* **Tự động cấu hình:** Script `hardware/desktop-lenovo-m910q/configure_desktop.sh` sẽ:
   1. Tắt chế độ Sleep/Suspend tự động để máy luôn sẵn sàng hoạt động.
   2. Cấu hình Wake-on-LAN (WOL) để bật nguồn từ xa qua mạng nội bộ.
   3. Kiểm tra và tối ưu driver card đồ họa.
-* **Chi tiết:** Xem [Runbook Lenovo Desktop](file://docs/machines/lenovo_desktop_ubuntu_dev_vnmdm.md).
+* **Chi tiết & Khôi phục tự động:** Xem [Hardware M910q Profile](file://hardware/desktop-lenovo-m910q/README.md) và [Runbook Lenovo Desktop](file://docs/machines/lenovo_desktop_ubuntu_dev_vnmdm.md).
 
 ---
 
@@ -40,8 +40,8 @@ Hệ thống được thiết kế theo dạng mô-đun (Modular), hỗ trợ nh
 # Chọn MacBook T2
 sudo ./bin/setup.sh --hardware=t2-mac
 
-# Chọn Lenovo Desktop
-sudo ./bin/setup.sh --hardware=desktop-lenovo
+# Chọn Lenovo ThinkCentre M910q (hoặc alias desktop-lenovo)
+sudo ./bin/setup.sh --hardware=desktop-lenovo-m910q
 
 # Chọn Laptop thường
 sudo ./bin/setup.sh --hardware=laptop

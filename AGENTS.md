@@ -20,7 +20,7 @@ When a user asks to set up a machine, consult this matrix to pick the right comm
 | Machine Context / User Prompt | Target Platform | Hardware Profile | Recommended Command | Machine Runbook |
 |---|---|---|---|---|
 | **Restore this machine (MacBook Pro 2019 Ubuntu)** | Ubuntu | `t2-mac` | `sudo ./bin/restore_current_machine.sh` | [`macbook_pro_2019_ubuntu_server.md`](file://docs/machines/macbook_pro_2019_ubuntu_server.md) |
-| **Lenovo Desktop Ubuntu 24.04 (Dev + VN-MDM)** | Ubuntu | `desktop-lenovo` | `sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn-mdm --app-mode=docker` | [`lenovo_desktop_ubuntu_dev_vnmdm.md`](file://docs/machines/lenovo_desktop_ubuntu_dev_vnmdm.md) |
+| **Lenovo ThinkCentre M910q (Dev + VN-MDM)** | Ubuntu | `desktop-lenovo-m910q` | `sudo ./bin/setup.sh --hardware=desktop-lenovo-m910q --profile=dev-workstation --app=vn-mdm --app-mode=native` | [`lenovo_desktop_ubuntu_dev_vnmdm.md`](file://docs/machines/lenovo_desktop_ubuntu_dev_vnmdm.md) |
 | **MacBook reinstalled with macOS for Rails** | macOS | `auto` | `./bin/setup.sh --platform=macos --profile=dev-workstation` | [`macbook_macos_rails_setup.md`](file://docs/machines/macbook_macos_rails_setup.md) |
 | **Generic Laptop 24/7 Home Server** | Ubuntu | `laptop` | `sudo ./bin/setup.sh --hardware=laptop --auto` | [`docs/server/multi_project_hosting.md`](file://docs/server/multi_project_hosting.md) |
 | **Generic PC / NUC / VPS** | Ubuntu | `generic-pc` | `sudo ./bin/setup.sh --hardware=generic-pc --auto` | [`docs/QUICKSTART.md`](file://docs/QUICKSTART.md) |

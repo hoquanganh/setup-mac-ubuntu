@@ -1,11 +1,11 @@
 #!/bin/bash
 ###############################################################################
-# Lenovo Desktop / Generic PC Hardware Optimization Script
+# Lenovo ThinkCentre M910q / Generic Desktop PC Hardware Optimization Script
 # Support: Ubuntu 22.04 / 24.04 / 26.04
 ###############################################################################
 set -e
 
-log() { echo -e "\n\033[1;32m[HARDWARE-DESKTOP]\033[0m $1"; }
+log() { echo -e "\n\033[1;32m[HARDWARE-M910Q]\033[0m $1"; }
 warn() { echo -e "\n\033[1;33m[WARN]\033[0m $1"; }
 err() { echo -e "\n\033[1;31m[ERROR]\033[0m $1"; }
 
@@ -14,17 +14,22 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-log "Configuring Lenovo Desktop / Generic PC hardware profile..."
+log "Configuring Lenovo ThinkCentre M910q / Generic PC hardware profile..."
 
 # 1. Disable Sleep / Suspend if this desktop is intended to stay awake as server/dev machine
-log "Configuring systemd power management to keep desktop awake..."
-mkdir -p /etc/systemd/logind.conf.d/
-cat <<EOF > /etc/systemd/logind.conf.d/desktop-keepalive.conf
+KEEPALIVE_CONF="/etc/systemd/logind.conf.d/desktop-keepalive.conf"
+if [ ! -f "$KEEPALIVE_CONF" ]; then
+  log "Configuring systemd power management to keep desktop awake..."
+  mkdir -p /etc/systemd/logind.conf.d/
+  cat <<EOF > "$KEEPALIVE_CONF"
 [Login]
 IdleAction=ignore
 HandleSuspendKey=ignore
 HandleHibernateKey=ignore
 EOF
+else
+  log "Keep-alive configuration already present at $KEEPALIVE_CONF."
+fi
 
 # Mask suspend targets to prevent unexpected sleep
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target 2>/dev/null || true

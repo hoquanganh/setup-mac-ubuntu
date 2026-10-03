@@ -19,7 +19,7 @@ Usage: sudo ./bin/setup.sh [OPTIONS]
 
 Options:
   --platform=TYPE       Target OS platform: auto (default), ubuntu, macos
-  --hardware=TYPE       Hardware profile: auto (default), t2-mac, desktop-lenovo, laptop, generic-pc
+  --hardware=TYPE       Hardware profile: auto (default), t2-mac, desktop-lenovo-m910q, desktop-lenovo, laptop, generic-pc
   --profile=TYPE        Setup profile: server-247 (default), dev-workstation, minimal
   --app=APP_NAME        Primary app to deploy: vn-mdm (default), none
   --app-mode=MODE       App deployment mode: native (default, systemd), docker
@@ -30,8 +30,8 @@ Examples:
   # Restore this MacBook Pro 2019 Ubuntu 24/7 server:
   sudo ./bin/setup.sh --auto
 
-  # Setup fresh Lenovo desktop Ubuntu 24.04 as Dev Workstation + VN-MDM via Docker:
-  sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn-mdm --app-mode=docker
+  # Setup fresh Lenovo ThinkCentre M910q Ubuntu 24.04 as Dev Workstation + VN-MDM:
+  sudo ./bin/setup.sh --hardware=desktop-lenovo-m910q --profile=dev-workstation --app=vn-mdm --app-mode=native
 
   # Setup macOS for Rails development:
   ./bin/setup.sh --platform=macos --profile=dev-workstation
@@ -110,7 +110,7 @@ if [ "$HARDWARE" == "auto" ]; then
   if [[ "$SYSTEM_VENDOR" =~ "Apple" ]] || [[ "$PRODUCT_NAME" =~ "MacBookPro15" ]] || [[ "$PRODUCT_NAME" =~ "MacBook" ]]; then
     HARDWARE="t2-mac"
   elif [[ "$SYSTEM_VENDOR" =~ "Lenovo" ]] && [[ "$CHASSIS_TYPE" != "9" ]] && [[ "$CHASSIS_TYPE" != "10" ]]; then
-    HARDWARE="desktop-lenovo"
+    HARDWARE="desktop-lenovo-m910q"
   elif [[ "$CHASSIS_TYPE" == "9" ]] || [[ "$CHASSIS_TYPE" == "10" ]]; then
     HARDWARE="laptop"
   else
@@ -132,9 +132,9 @@ case $HARDWARE in
     log "Configuring laptop lid sleep prevention..."
     bash "$SCRIPT_DIR/hardware/laptop-power/configure_power.sh"
     ;;
-  desktop-lenovo)
-    log "Configuring Lenovo Desktop optimizations..."
-    bash "$SCRIPT_DIR/hardware/desktop-lenovo/configure_desktop.sh"
+  desktop-lenovo-m910q|desktop-lenovo)
+    log "Configuring Lenovo Desktop M910q optimizations..."
+    bash "$SCRIPT_DIR/hardware/desktop-lenovo-m910q/configure_desktop.sh"
     ;;
   generic-pc)
     log "Generic PC profile selected. Skipping specialized driver tweaks."
