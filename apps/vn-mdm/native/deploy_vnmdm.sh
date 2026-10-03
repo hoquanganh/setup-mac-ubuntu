@@ -33,9 +33,25 @@ log "Testing Nginx configuration..."
 nginx -t
 
 log "Deploying Systemd Services (backend, worker, frontend)..."
-cp "$SCRIPT_DIR/vnmdm-backend.service" /etc/systemd/system/
-cp "$SCRIPT_DIR/vnmdm-frontend.service" /etc/systemd/system/
-cp "$SCRIPT_DIR/vnmdm-worker.service" /etc/systemd/system/
+NPM_BIN=$(sudo -u "$REAL_USER" which npm 2>/dev/null || echo "$REAL_HOME/.nodenv/shims/npm")
+BUNDLE_BIN=$(sudo -u "$REAL_USER" which bundle 2>/dev/null || echo "$REAL_HOME/.rbenv/shims/bundle")
+EXTRA_PATH="$REAL_HOME/.nodenv/shims:$REAL_HOME/.rbenv/shims:$REAL_HOME/.rbenv/bin"
+
+sed -e "s|/home/qa|$REAL_HOME|g" \
+    -e "s|User=qa|User=$REAL_USER|g" \
+    -e "s|/home/qa/.rbenv/shims/bundle|$BUNDLE_BIN|g" \
+    "$SCRIPT_DIR/vnmdm-backend.service" > /etc/systemd/system/vnmdm-backend.service
+
+sed -e "s|/home/qa|$REAL_HOME|g" \
+    -e "s|User=qa|User=$REAL_USER|g" \
+    -e "s|/home/qa/.rbenv/shims/bundle|$BUNDLE_BIN|g" \
+    "$SCRIPT_DIR/vnmdm-worker.service" > /etc/systemd/system/vnmdm-worker.service
+
+sed -e "s|/home/qa|$REAL_HOME|g" \
+    -e "s|User=qa|User=$REAL_USER|g" \
+    -e "s|/usr/bin/npm|$NPM_BIN|g" \
+    -e "s|PATH=|PATH=$EXTRA_PATH:|g" \
+    "$SCRIPT_DIR/vnmdm-frontend.service" > /etc/systemd/system/vnmdm-frontend.service
 
 log "Deploying ngrok auto-start service..."
 # Uses --domain flag in ExecStart to keep URL fixed across restarts.

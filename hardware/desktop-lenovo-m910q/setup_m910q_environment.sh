@@ -296,10 +296,91 @@ EOF
   chmod +x "$REAL_HOME/.local/share/applications/tableplus.desktop" 2>/dev/null || true
 fi
 
+# ==============================================================================
+# 7. CẤU HÌNH SYSTEMD DAEMONS CHO VN-MDM (NẾU ĐÃ CÓ MÃ NGUỒN ~/vn-mdm)
+# ==============================================================================
+VNMDM_API="$REAL_HOME/vn-mdm/api"
+VNMDM_WEB="$REAL_HOME/vn-mdm/web"
+
+if [ -d "$VNMDM_API" ] && [ -d "$VNMDM_WEB" ]; then
+  log "Bước 7/7: Thiết lập các dịch vụ Systemd tự khởi động cho VN-MDM..."
+
+  NPM_BIN="$REAL_HOME/.nodenv/shims/npm"
+  BUNDLE_BIN="$REAL_HOME/.rbenv/shims/bundle"
+  EXTRA_PATH="$REAL_HOME/.nodenv/shims:$REAL_HOME/.rbenv/shims:$REAL_HOME/.rbenv/bin"
+
+  # 7.1 Backend service
+  cat <<EOF > /etc/systemd/system/vnmdm-backend.service
+[Unit]
+Description=VN-MDM Rails Backend
+After=network.target postgresql.service redis-server.service
+
+[Service]
+Type=simple
+User=$REAL_USER
+WorkingDirectory=$VNMDM_API
+Environment="RAILS_ENV=development"
+Environment="PATH=$EXTRA_PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=$BUNDLE_BIN exec rails server -b 127.0.0.1 -p 3000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ok "Đã cấu hình /etc/systemd/system/vnmdm-backend.service."
+
+  # 7.2 Worker service
+  cat <<EOF > /etc/systemd/system/vnmdm-worker.service
+[Unit]
+Description=VN-MDM Solid Queue Worker (APNs Push & Background Jobs)
+After=network.target postgresql.service redis-server.service vnmdm-backend.service
+
+[Service]
+Type=simple
+User=$REAL_USER
+WorkingDirectory=$VNMDM_API
+Environment="RAILS_ENV=development"
+Environment="PATH=$EXTRA_PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=$BUNDLE_BIN exec bin/jobs
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ok "Đã cấu hình /etc/systemd/system/vnmdm-worker.service."
+
+  # 7.3 Frontend service
+  cat <<EOF > /etc/systemd/system/vnmdm-frontend.service
+[Unit]
+Description=VN-MDM Next.js Frontend
+After=network.target vnmdm-backend.service
+
+[Service]
+Type=simple
+User=$REAL_USER
+WorkingDirectory=$VNMDM_WEB
+Environment="NODE_ENV=development"
+Environment="PATH=$EXTRA_PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=$NPM_BIN run dev -- -p 3001 -H 127.0.0.1
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ok "Đã cấu hình /etc/systemd/system/vnmdm-frontend.service."
+
+  systemctl daemon-reload
+  systemctl enable vnmdm-backend vnmdm-worker vnmdm-frontend nginx
+  ok "Đã kích hoạt auto-start cho tất cả các dịch vụ VN-MDM."
+else
+  info "Chưa tìm thấy thư mục ~/vn-mdm/api hoặc ~/vn-mdm/web. Bỏ qua cấu hình systemd."
+fi
+
 log "=========================================================================="
 log " 🎉 KIỂM TRA VÀ CẤU HÌNH MÁY TRẠM M910Q HOÀN TẤT THÀNH CÔNG!"
 log "=========================================================================="
 info "Tất cả các dịch vụ đã có (MySQL, MongoDB) đều được bảo vệ toàn vẹn."
 info "PostgreSQL, Redis, Nginx đã sẵn sàng cho dự án VN-MDM."
-info "Ruby 3.4.7 và Node 22.18.0 đã sẵn sàng để khởi chạy VN-MDM trực tiếp."
+info "Ruby 3.4.7 và Node 22.18.0 đã sẵn sàng."
+info "Khởi động toàn bộ stack bằng lệnh: sudo systemctl restart nginx vnmdm-backend vnmdm-worker vnmdm-frontend"
 log "=========================================================================="
