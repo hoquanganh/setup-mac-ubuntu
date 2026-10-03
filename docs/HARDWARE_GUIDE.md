@@ -1,6 +1,6 @@
 # 💻 Hướng Dẫn Cấu Hình Theo Loại Phần Cứng (Hardware Guide)
 
-Hệ thống được thiết kế theo dạng mô-đun (Modular), hỗ trợ nhiều dòng máy khác nhau khi làm Home Server.
+Hệ thống được thiết kế theo dạng mô-đun (Modular), hỗ trợ nhiều dòng máy khác nhau khi làm Home Server hoặc Developer Workstation.
 
 ---
 
@@ -11,21 +11,26 @@ Hệ thống được thiết kế theo dạng mô-đun (Modular), hỗ trợ nh
   2. Cài kernel `linux-t2` và `apple-firmware-script`.
   3. Giải nén firmware Wi-Fi/Bluetooth trực tiếp từ Apple Recovery.
 * **Lưu ý:** Sau khi cài máy mới lần đầu, cần `sudo reboot` để khởi động vào kernel T2 mới.
+* **Chi tiết:** Xem [Runbook MacBook Pro 2019](file://docs/machines/macbook_pro_2019_ubuntu_server.md).
 
 ---
 
-## 2. Laptop Thông Thường (Generic Laptop - Dell, ThinkPad, Asus...)
+## 2. Máy Tính Bàn (Desktop PC / Lenovo ThinkCentre / Intel NUC)
+* **Đặc điểm:** Thường có card mạng có dây Ethernet Gigabit, cấu hình CPU cao, RAM lớn.
+* **Tự động cấu hình:** Script `hardware/desktop-lenovo/configure_desktop.sh` sẽ:
+  1. Tắt chế độ Sleep/Suspend tự động để máy luôn sẵn sàng hoạt động.
+  2. Cấu hình Wake-on-LAN (WOL) để bật nguồn từ xa qua mạng nội bộ.
+  3. Kiểm tra và tối ưu driver card đồ họa.
+* **Chi tiết:** Xem [Runbook Lenovo Desktop](file://docs/machines/lenovo_desktop_ubuntu_dev_vnmdm.md).
+
+---
+
+## 3. Laptop Thông Thường (Generic Laptop - Dell, ThinkPad, Asus...)
 * **Đặc điểm:** Máy có pin và màn hình gập. Mặc định Ubuntu sẽ đi vào chế độ Sleep / Suspend khi gập màn hình (Lid Close).
 * **Tự động cấu hình:** Script `hardware/laptop-power/configure_power.sh` sẽ:
   1. Sửa `/etc/systemd/logind.conf` (`HandleLidSwitch=ignore`).
   2. Disable/Mask các target `sleep.target`, `suspend.target`, `hibernate.target`.
   3. Giúp laptop hoạt động liên tục 24/7 kể cả khi gập màn hình.
-
----
-
-## 3. Máy Tính Bàn (Desktop PC / Intel NUC / Mini PC / Cloud VPS)
-* **Đặc điểm:** Không có màn hình gập hay chip mã hóa đặc thù.
-* **Cấu hình:** Hệ thống chạy trực tiếp các module `core/` mà không cần cài thêm driver hay cấu hình pin.
 
 ---
 
@@ -35,9 +40,12 @@ Hệ thống được thiết kế theo dạng mô-đun (Modular), hỗ trợ nh
 # Chọn MacBook T2
 sudo ./bin/setup.sh --hardware=t2-mac
 
+# Chọn Lenovo Desktop
+sudo ./bin/setup.sh --hardware=desktop-lenovo
+
 # Chọn Laptop thường
 sudo ./bin/setup.sh --hardware=laptop
 
-# Chọn Desktop PC / Mini PC
+# Chọn PC / NUC / VPS tiêu chuẩn
 sudo ./bin/setup.sh --hardware=generic-pc
 ```

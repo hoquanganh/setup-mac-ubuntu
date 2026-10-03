@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vnmdm_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vnmdm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vnmdm}
+      POSTGRES_DB: ${POSTGRES_DB:-vn_mdm_production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: vnmdm_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ${VNMDM_API_PATH:-../../../../vn-mdm/api}
+      dockerfile: Dockerfile
+    container_name: vnmdm_backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      RAILS_ENV: ${RAILS_ENV:-production}
+      DATABASE_URL: postgres://${POSTGRES_USER:-vnmdm}:${POSTGRES_PASSWORD:-vnmdm}@postgres:5432/${POSTGRES_DB:-vn_mdm_production}
+      REDIS_URL: redis://redis:6379/1
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-replace_with_a_secure_random_key_64_chars}
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+  worker:
+    build:
+      context: ${VNMDM_API_PATH:-../../../../vn-mdm/api}
+      dockerfile: Dockerfile
+    container_name: vnmdm_worker
+    restart: unless-stopped
+    command: bundle exec rake solid_queue:start
+    depends_on:
+      - backend
+      - postgres
+      - redis
+    environment:
+      RAILS_ENV: ${RAILS_ENV:-production}
+      DATABASE_URL: postgres://${POSTGRES_USER:-vnmdm}:${POSTGRES_PASSWORD:-vnmdm}@postgres:5432/${POSTGRES_DB:-vn_mdm_production}
+      REDIS_URL: redis://redis:6379/1
+
+  frontend:
+    build:
+      context: ${VNMDM_WEB_PATH:-../../../../vn-mdm/web}
+      dockerfile: Dockerfile
+    container_name: vnmdm_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+      PORT: 3001
+    ports:
+      - "3001:3001"
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,45 @@
+# Homebrew Bundle for macOS Development (Ruby on Rails, Web & Database Dev)
+# Run with: brew bundle --file=platforms/macos/Brewfile
+
+tap "homebrew/bundle"
+tap "homebrew/services"
+
+# Core Development CLI & Compilers
+brew "git"
+brew "gh"
+brew "curl"
+brew "wget"
+brew "jq"
+brew "tree"
+brew "pkg-config"
+
+# Ruby & Native Gem Build Dependencies (Essential for Nokogiri, pg, libvips)
+brew "openssl@3"
+brew "readline"
+brew "libyaml"
+brew "gmp"
+brew "zlib"
+brew "vips"
+brew "libpq"
+brew "rbenv"
+brew "ruby-build"
+
+# Node.js & Web Tooling
+brew "node@22"
+brew "yarn"
+
+# Databases & Cache
+brew "postgresql@16", restart_service: true
+brew "redis", restart_service: true
+
+# Cloud & Networking
+brew "tailscale"
+brew "ngrok/ngrok/ngrok"
+
+# GUI Development Applications (Casks)
+cask "google-chrome"
+cask "warp"
+cask "cursor"
+cask "tableplus"
+cask "orbstack" # Fast, lightweight Docker desktop alternative for macOS
+cask "postman"

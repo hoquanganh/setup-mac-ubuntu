@@ -1,56 +1,41 @@
-# 🚀 Quickstart Guide: Home Server Setup
+# 🚀 Universal Multi-Platform & Multi-Machine Quickstart Guide
 
-Chào mừng bạn đến với dự án Home Server. Hướng dẫn này giúp bạn cài đặt server chỉ trong 5 phút.
-
-## 📋 Yêu Cầu Ban Đầu
-1. Máy đã cài sẵn hệ điều hành **Ubuntu 22.04 / 24.04 / 26.04 LTS**.
-2. Kết nối Internet (Wi-Fi hoặc cáp LAN).
-3. Quyền `sudo` trên máy.
+Kho tài liệu và mã nguồn tự động hóa cài đặt môi trường cho nhiều dòng máy, nền tảng hệ điều hành (Ubuntu Linux, macOS) và dự án web.
 
 ---
 
-## ⚡ Cài Đặt 1-Click (Tự Động)
+## 🧭 Chọn Kịch Bản / Máy Cần Cài Đặt
 
-Mở Terminal và chạy duy nhất lệnh sau:
-
-```bash
-cd ~/Documents/Ubuntu_install # Hoặc thư mục bạn clone repo
-sudo ./bin/setup.sh --auto
-```
-
-### Script sẽ tự động thực hiện:
-1. 🔍 **Phát hiện phần cứng:** (Nếu là MacBook T2 chip -> cài driver bàn phím, trackpad, Wi-Fi; nếu là Laptop -> tắt chế độ ngủ khi gập màn hình).
-2. 🛠️ **Cài đặt công cụ hệ thống:** Vim, Zsh, Chrome, Git, Build tools.
-3. 🗄️ **Cài đặt Database:** PostgreSQL 18, Redis 7, MySQL, MongoDB 7.
-4. ⚙️ **Cài đặt Môi trường:** Node.js 22, Ruby 3.3.6 (rbenv), Docker.
-5. 🌐 **Cài đặt Web Server & Remote:** Nginx Reverse Proxy, UFW Firewall, Avahi mDNS (`.local`), Tailscale VPN, ngrok.
-6. 🚀 **Deploy Ứng dụng:** Tự động chạy dự án `vn-mdm` (Rails API :3000 + Next.js Web :3001 qua Nginx :80).
+| Mục Tiêu | Loại Máy / Hệ Điều Hành | Lệnh 1-Click | Runbook Chi Tiết |
+|---|---|---|---|
+| **Khôi phục máy này (24/7 Server)** | Apple MacBook Pro 2019 (T2) / Ubuntu | `sudo ./bin/restore_current_machine.sh` | [Runbook MacBook 2019 Server](file://docs/machines/macbook_pro_2019_ubuntu_server.md) |
+| **Máy bàn Dev + Chạy VN-MDM** | Lenovo ThinkCentre / PC / Ubuntu 24.04 | `sudo ./bin/setup.sh --hardware=desktop-lenovo --profile=dev-workstation --app=vn-mdm --app-mode=docker` | [Runbook Lenovo Desktop](file://docs/machines/lenovo_desktop_ubuntu_dev_vnmdm.md) |
+| **Cài lại macOS để Dev Rails** | MacBook Pro / macOS (Intel / M1/M2/M3/M4) | `./bin/setup.sh --platform=macos --profile=dev-workstation` | [Runbook macOS Rails](file://docs/machines/macbook_macos_rails_setup.md) |
+| **Laptop bất kỳ làm Server 24/7** | Laptop Dell, HP, ThinkPad, Asus / Ubuntu | `sudo ./bin/setup.sh --hardware=laptop --auto` | [Hardware Guide](file://hardware/laptop-power/README.md) |
+| **Cloud VPS / NUC / Mini PC** | Generic x86_64 PC / Ubuntu | `sudo ./bin/setup.sh --hardware=generic-pc --auto` | [Server Setup](file://docs/server/multi_project_hosting.md) |
 
 ---
 
-## 🔗 Truy Cập Sau Khi Cài Đặt
+## 📂 Cấu Trúc Kho Lưu Trữ
 
-### 1. Trong cùng mạng Wi-Fi (Local Network)
-- **Web App:** [http://qa-MacBookPro15-2.local](http://qa-MacBookPro15-2.local) (hoặc IP máy `http://192.168.x.x`)
-- **SSH:** `ssh qa@qa-MacBookPro15-2.local`
-
-### 2. Từ xa qua Internet (VPN Tailscale)
-1. Chạy lệnh kích hoạt Tailscale:
-   ```bash
-   sudo tailscale up
-   ```
-2. Đăng nhập ứng dụng Tailscale trên điện thoại / máy tính khác với cùng tài khoản.
-3. Truy cập Web hoặc SSH thông qua IP ảo `100.x.y.z`.
+```text
+├── bin/                          # Các script thực thi chính (setup.sh, restore_current_machine.sh)
+├── platforms/                    # Scripts cài đặt theo hệ điều hành (ubuntu, macos)
+│   ├── ubuntu/                   # Base tools, runtimes, databases, services, desktop apps
+│   └── macos/                    # Brewfile, setup_macos_rails.sh
+├── hardware/                     # Tối ưu hóa theo dòng máy phần cứng (macbook-t2, desktop-lenovo, laptop-power)
+├── apps/                         # Cấu hình triển khai ứng dụng (vn-mdm native & docker, templates)
+├── docs/                         # Toàn bộ cẩm nang và tài liệu tra cứu
+│   ├── machines/                 # Runbooks theo từng loại máy cụ thể
+│   ├── platform-guides/          # Kiến thức chuyên sâu Ubuntu & macOS, sửa lỗi Rails gems
+│   └── server/                   # Hướng dẫn Nginx multi-project, Remote access, Troubleshooting
+└── AGENTS.md                     # Bản đồ kỹ năng và quy tắc thực thi dành cho AI Agent
+```
 
 ---
 
-## 📂 Cấu Trúc Thư Mục Dự Án
-
-```
-├── bin/
-│   └── setup.sh                 # Script chạy chính tự động
-├── hardware/                    # Driver & Cấu hình phần cứng (T2 Mac, Laptop power)
-├── core/                        # Script cài đặt base system, DBs, runtimes, nginx
-├── apps/                        # Cấu hình deploy ứng dụng (VN-MDM, Templates)
-└── docs/                        # Tài liệu chi tiết cho người dùng
-```
+## 🤖 Dành Cho AI Agent (Antigravity, Cursor, Claude Code)
+AI Agent khi nhận prompt từ người dùng cần đọc file [`AGENTS.md`](file://AGENTS.md) để:
+1. Tra cứu ma trận quyết định theo ngữ cảnh máy tính.
+2. Nạp skill tương ứng trong `.agent/skills/`.
+3. Tự động chạy đúng script hoặc tra cứu cách giải quyết vấn đề xuyên suốt các nền tảng.
