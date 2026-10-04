@@ -9,7 +9,7 @@ Hồ sơ phần cứng, danh mục ứng dụng/môi trường đã cài đặt 
 | Thông số | Giá trị thực tế trên máy |
 |---|---|
 | **Dòng máy (Model)** | **Lenovo ThinkCentre M910q Tiny** (Form factor: Desktop Mini) |
-| **Hostname** | `quang-anh-910q` (mDNS: `quang-anh-910q.local`) |
+| **Hostname** | `qa-server-m910q` (mDNS: `qa-server-m910q.local`) |
 | **CPU** | Intel(R) Core(TM) i5-6500T CPU @ 2.50GHz (4 nhân, 4 luồng, Turbo 3.10GHz, TDP 35W) |
 | **RAM** | 16 GB DDR4 (15 GiB thực tế, ~5.2 GiB available khi chạy GNOME GUI) |
 | **Ổ cứng** | NVMe SSD 256 GB (`/dev/nvme0n1p2`, ~99 GB dung lượng trống khả dụng) |
@@ -110,7 +110,7 @@ graph TD
         subgraph Existing [Các dịch vụ đã có từ trước - Được bảo toàn]
             MySQL[(MySQL Server :3306)]
             Mongo[(MongoDB Server :27017)]
-            Avahi[Avahi mDNS quang-anh-910q.local]
+            Avahi[Avahi mDNS qa-server-m910q.local]
             WarpCursor[Warp / Cursor / TablePlus]
         end
     end

@@ -28,6 +28,23 @@ INSTALL_PACKS="$REAL_HOME/Documents/Systems/install-packs"
 
 log "Bắt đầu kiểm tra và cấu hình môi trường cho Lenovo ThinkCentre M910q (User: $REAL_USER)..."
 
+DESIRED_HOSTNAME="qa-server-m910q"
+CURRENT_HOSTNAME="$(hostnamectl --static 2>/dev/null || hostname -s)"
+if [ "$CURRENT_HOSTNAME" != "$DESIRED_HOSTNAME" ]; then
+  info "Đặt hostname $CURRENT_HOSTNAME → $DESIRED_HOSTNAME..."
+  hostnamectl set-hostname "$DESIRED_HOSTNAME"
+  if grep -qE "[[:space:]]${CURRENT_HOSTNAME}([[:space:]]|$)" /etc/hosts; then
+    sed -i "s/${CURRENT_HOSTNAME}/${DESIRED_HOSTNAME}/g" /etc/hosts
+  fi
+  if ! grep -qE "[[:space:]]${DESIRED_HOSTNAME}([[:space:]]|$)" /etc/hosts; then
+    echo "127.0.1.1 ${DESIRED_HOSTNAME}" >> /etc/hosts
+  fi
+  systemctl restart avahi-daemon 2>/dev/null || true
+  ok "Hostname hiện tại: $(hostnamectl --static)"
+else
+  ok "Hostname đã đúng: $DESIRED_HOSTNAME"
+fi
+
 # ==============================================================================
 # 1. PHẦN CỨNG & NGUỒN ĐIỆN (KEEP-ALIVE & WAKE-ON-LAN)
 # ==============================================================================
@@ -202,6 +219,14 @@ else
   systemctl enable nginx
 fi
 
+# Cloudflare Tunnel terminates TLS; honor X-Forwarded-Proto when present.
+cat <<'EOF' > /etc/nginx/conf.d/forwarded-proto.conf
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ''      $scheme;
+}
+EOF
+
 # Thiết lập vhost vnmdm nếu chưa có
 NGINX_CONF="/etc/nginx/sites-available/vnmdm"
 if [ ! -f "$NGINX_CONF" ]; then
@@ -215,13 +240,13 @@ server {
     client_max_body_size 50M;
 
     # Backend routes: Rails API (:3000)
-    location ~ ^/(api|up|mdm|enroll|[^/]+/(mdm|enroll|apps|vpp)) {
+    location ~ ^/(api|up|mdm|enroll|[^/]+/(mdm|enroll|apps|vpp|windows)) {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
     }
 
     # Frontend routes: Next.js Web UI (:3001)
@@ -233,7 +258,7 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
     }
 }
 EOF
