@@ -1,0 +1,11 @@
+[Unit]
+Description=Run VN-MDM Health Check every 30 minutes
+Persistent=true
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

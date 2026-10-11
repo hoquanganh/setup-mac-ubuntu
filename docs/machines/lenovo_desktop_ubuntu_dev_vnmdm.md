@@ -76,3 +76,26 @@ sudo bash ~/Documents/Ubuntu_install/apps/vn-mdm/native/deploy_vnmdm.sh
 ```
 
 Dịch vụ sẽ tự động kích hoạt trên cổng 80 qua Nginx và tự khởi động cùng máy tính.
+
+---
+
+## 💾 Sao Lưu & Khôi Phục Thảm Họa (Backup & Disaster Recovery)
+
+Chi tiết quy trình xem tại [`docs/server/backup_and_disaster_recovery.md`](file://docs/server/backup_and_disaster_recovery.md).
+
+### 1. Sao lưu thủ công:
+```bash
+sudo ./bin/backup_system_data.sh --notify-email
+```
+*Tự động sao lưu database PostgreSQL `vn_mdm_*`, Rails `master.key`, uploads `storage/`, landing leads, SSH keys, AWS/Azure, shell configs, và upload Google Drive.*
+
+### 2. Khôi phục sau khi cài mới OS:
+```bash
+# Bung lại toàn bộ database và chìa khóa bí mật từ bản backup:
+sudo ./bin/restore_system_data.sh ~/backups/backup_m910q_YYYYMMDD_HHMMSS.tar.gz
+```
+
+### 3. Kiểm tra sức khỏe toàn hệ thống & giám sát:
+```bash
+./bin/health_check.sh
+```

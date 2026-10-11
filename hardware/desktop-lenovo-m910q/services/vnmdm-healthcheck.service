@@ -1,0 +1,10 @@
+[Unit]
+Description=VN-MDM Service & Endpoint Health Monitor
+After=network.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/home/quanganhho/dev/setup-mac-ubuntu/bin/health_check.sh
+StandardOutput=journal
+StandardError=journal

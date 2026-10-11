@@ -122,6 +122,7 @@ graph TD
 - `5432`: PostgreSQL (Mới cài cho VN-MDM)
 - `3000`: Rails API VN-MDM (Localhost)
 - `3001`: Next.js UI VN-MDM (Localhost)
+- `4321`: VN-MDM Landing Page (Node.js via `vn-mdm-landing.service`)
 - `80`: Nginx Reverse Proxy tiếp nhận traffic nội bộ LAN và Tunnel
 - `4040`: ngrok dashboard (nếu dùng ngrok) hoặc `cloudflared` metrics
 
@@ -141,10 +142,26 @@ Kịch bản `setup_m910q_environment.sh` được tích hợp sẵn các bướ
    - PostgreSQL: Nếu chưa có `psql` thì mới cài đặt `postgresql`, tạo database `vn_mdm_development` và user `vnmdm`.
 5. **Kiểm tra Nginx & Reverse Proxy:** Nếu chưa có thì mới cài `nginx`, áp dụng cấu hình proxy cho `vn-mdm`.
 6. **Kiểm tra Desktop Apps:** Tận dụng bộ cài offline tại `~/Documents/Systems/install-packs` nếu máy cần cài lại.
+7. **Cài đặt sao lưu & giám sát:** Cài đặt `rclone`, timer sao lưu hàng tuần (`vnmdm-backup.timer`), và timer giám sát hệ thống (`vnmdm-healthcheck.timer`).
 
 ---
 
-## 🚀 6. Hướng dẫn Chạy
+## 💾 6. Hệ Thống Sao Lưu (Backup), Giám Sát (Health Check) & Cảnh Báo Email
+
+Hệ thống đã được trang bị bộ công cụ bảo vệ dữ liệu toàn diện (chi tiết xem tại [`docs/server/backup_and_disaster_recovery.md`](file://docs/server/backup_and_disaster_recovery.md)):
+
+| Công cụ / Dịch vụ | Chức năng | Cách chạy / Kiểm tra |
+|---|---|---|
+| **`bin/backup_system_data.sh`** | Sao lưu PostgreSQL (`vn_mdm_*`), Rails master.key, storage, landing leads, ssh, aws, zshrc | `sudo bash bin/backup_system_data.sh --notify-email` |
+| **`bin/restore_system_data.sh`** | Khôi phục 100% dữ liệu sống và cấu hình sau khi cài mới OS | `sudo bash bin/restore_system_data.sh [file.tar.gz]` |
+| **`bin/health_check.sh`** | Kiểm tra 8 dịch vụ core, 5 cổng kết nối, dung lượng ổ cứng, cảnh báo sự cố | `./bin/health_check.sh` |
+| **`bin/send_alert_email.py`** | Gửi email thông báo qua Gmail SMTP (sử dụng mật khẩu ứng dụng của `vn-mdm-landing`) | `sudo ./bin/send_alert_email.py --test` |
+| **`vnmdm-backup.timer`** | Tự động chạy sao lưu lúc 02:00 sáng Chủ Nhật hàng tuần | `systemctl status vnmdm-backup.timer` |
+| **`vnmdm-healthcheck.timer`** | Tự động kiểm tra sức khoẻ hệ thống mỗi 30 phút, gửi email nếu có lỗi | `systemctl status vnmdm-healthcheck.timer` |
+
+---
+
+## 🚀 7. Hướng dẫn Chạy
 
 ```bash
 # 1. Tối ưu hoá phần cứng M910q (chống sleep, bật WOL):
@@ -152,4 +169,8 @@ sudo bash hardware/desktop-lenovo-m910q/configure_desktop.sh
 
 # 2. Chạy kịch bản kiểm tra và thiết lập môi trường idempotent:
 sudo bash hardware/desktop-lenovo-m910q/setup_m910q_environment.sh
+
+# 3. Tạo ngay bản sao lưu dữ liệu đầu tiên:
+sudo bash bin/backup_system_data.sh --notify-email
 ```
+

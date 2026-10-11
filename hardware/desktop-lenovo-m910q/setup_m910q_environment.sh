@@ -73,7 +73,7 @@ log "Bước 2/6: Kiểm tra các thư viện build (C/C++, OpenSSL, libvips, li
 REQUIRED_PKGS=(
   build-essential curl wget git libssl-dev zlib1g-dev libreadline-dev
   libyaml-dev libxml2-dev libxslt1-dev libcurl4-openssl-dev libffi-dev
-  pkg-config libvips-dev ethtool avahi-daemon
+  pkg-config libvips-dev ethtool avahi-daemon rclone
 )
 
 MISSING_PKGS=()
@@ -401,11 +401,23 @@ else
   info "Chưa tìm thấy thư mục ~/vn-mdm/api hoặc ~/vn-mdm/web. Bỏ qua cấu hình systemd."
 fi
 
+# ==============================================================================
+# 8. CẤU HÌNH SAO LƯU ĐỊNH KỲ (BACKUP) & GIÁM SÁT HỆ THỐNG (HEALTH CHECK)
+# ==============================================================================
+log "Bước 8/8: Cấu hình kịch bản Sao lưu hàng tuần & Giám sát dịch vụ..."
+if [ -d "$SCRIPT_DIR/services" ]; then
+  cp "$SCRIPT_DIR/services/"* /etc/systemd/system/
+  systemctl daemon-reload
+  systemctl enable --now vnmdm-backup.timer vnmdm-healthcheck.timer 2>/dev/null || true
+  ok "Đã kích hoạt timer sao lưu hàng tuần (vnmdm-backup.timer) và giám sát (vnmdm-healthcheck.timer)."
+fi
+
 log "=========================================================================="
 log " 🎉 KIỂM TRA VÀ CẤU HÌNH MÁY TRẠM M910Q HOÀN TẤT THÀNH CÔNG!"
 log "=========================================================================="
 info "Tất cả các dịch vụ đã có (MySQL, MongoDB) đều được bảo vệ toàn vẹn."
 info "PostgreSQL, Redis, Nginx đã sẵn sàng cho dự án VN-MDM."
 info "Ruby 3.4.7 và Node 22.18.0 đã sẵn sàng."
+info "Đã thiết lập hệ thống sao lưu tự động và cảnh báo qua Gmail."
 info "Khởi động toàn bộ stack bằng lệnh: sudo systemctl restart nginx vnmdm-backend vnmdm-worker vnmdm-frontend"
 log "=========================================================================="

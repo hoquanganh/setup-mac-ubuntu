@@ -1,0 +1,10 @@
+[Unit]
+Description=VN-MDM & System Automated Weekly Backup
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/home/quanganhho/dev/setup-mac-ubuntu/bin/backup_system_data.sh --notify-email
+StandardOutput=journal
+StandardError=journal

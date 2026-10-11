@@ -21,6 +21,7 @@ When a user asks to set up a machine, consult this matrix to pick the right comm
 |---|---|---|---|---|
 | **Restore this machine (MacBook Pro 2019 Ubuntu)** | Ubuntu | `t2-mac` | `sudo ./bin/restore_current_machine.sh` | [`macbook_pro_2019_ubuntu_server.md`](file://docs/machines/macbook_pro_2019_ubuntu_server.md) |
 | **Lenovo ThinkCentre M910q (Dev + VN-MDM)** | Ubuntu | `desktop-lenovo-m910q` | `sudo ./bin/setup.sh --hardware=desktop-lenovo-m910q --profile=dev-workstation --app=vn-mdm --app-mode=native` | [`lenovo_desktop_ubuntu_dev_vnmdm.md`](file://docs/machines/lenovo_desktop_ubuntu_dev_vnmdm.md) |
+| **Backup / Disaster Recovery (M910q & VN-MDM)** | Ubuntu | `any` | `sudo ./bin/backup_system_data.sh --notify-email` / `sudo ./bin/restore_system_data.sh` | [`backup_and_disaster_recovery.md`](file://docs/server/backup_and_disaster_recovery.md) |
 | **MacBook reinstalled with macOS for Rails** | macOS | `auto` | `./bin/setup.sh --platform=macos --profile=dev-workstation` | [`macbook_macos_rails_setup.md`](file://docs/machines/macbook_macos_rails_setup.md) |
 | **Generic Laptop 24/7 Home Server** | Ubuntu | `laptop` | `sudo ./bin/setup.sh --hardware=laptop --auto` | [`docs/server/multi_project_hosting.md`](file://docs/server/multi_project_hosting.md) |
 | **Generic PC / NUC / VPS** | Ubuntu | `generic-pc` | `sudo ./bin/setup.sh --hardware=generic-pc --auto` | [`docs/QUICKSTART.md`](file://docs/QUICKSTART.md) |
@@ -33,6 +34,7 @@ When a user asks to set up a machine, consult this matrix to pick the right comm
 |---|---|---|
 | [System Setup Skill](file://.agent/skills/system_setup/SKILL.md) | Hardware detection, T2 driver installation, power & lid sleep management | Fresh Ubuntu setup, hardware driver issues |
 | [Server Infrastructure Skill](file://.agent/skills/server_infrastructure/SKILL.md) | PostgreSQL, Redis, MySQL, MongoDB, Node.js, Ruby, Docker, Nginx, UFW | Installing or troubleshooting database/runtime daemons |
+| [Backup & Disaster Recovery](file://docs/server/backup_and_disaster_recovery.md) | Automated weekly backup, Google Drive sync, Gmail SMTP alert, 1-click restore | Before OS reinstall or setting up automated data backups |
 | [Remote Access Skill](file://.agent/skills/remote_access/SKILL.md) | Avahi mDNS (`.local`), OpenSSH, Tailscale VPN, ngrok, Cloudflare Tunnels | Setting up or debugging local & remote connectivity |
 | [Multi-Project Hosting Skill](file://.agent/skills/multi_project_hosting/SKILL.md) | Nginx VirtualHosts, reverse proxies, multi-app path/domain routing | Adding a new project to host on this server |
 | [VN-MDM Live Server Setup Skill](file://.agent/skills/vn_mdm_server_setup/SKILL.md) | Deploying & configuring VN-MDM for real iOS/macOS device enrollment (APNs, ADE, ABM, ngrok HTTPS) | Setting up or debugging real device MDM enrollment & APNs push |
