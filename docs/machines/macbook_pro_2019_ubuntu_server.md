@@ -83,68 +83,61 @@ sudo systemctl restart vnmdm-frontend
 
 ---
 
-## ⌨️ Cấu Hình Trackpad, Bàn Phím & Bộ Gõ Tiếng Việt (Chống Nhảy Chữ)
+## 🔧 Xử Lý Sự Cố Phần Cứng Đặc Thù (MacBook Pro 2019 T2)
 
-### ⚠️ Triệu chứng & Nguyên nhân lỗi nhảy chữ trên MacBook T2
-Khi gõ văn bản (tiếng Việt hoặc tiếng Anh), chữ có thể bị nhảy lung tung, mất ký tự, chèn sai vị trí hoặc con trỏ chuột tự nhảy đi chỗ khác:
-* **Mặt Trackpad MacBook quá lớn:** Khi đặt tay gõ phím, lòng bàn tay / gò ngón cái tự nhiên tì hoặc quẹt lướt qua mặt trackpad.
-* **Tính năng `tap-to-click`:** Nếu bật `tap-to-click` (chạm nhẹ mặt kính là click), mọi va chạm nhẹ từ lòng bàn tay đều bị nhận diện là một cú click chuột, khiến con trỏ soạn thảo nhảy sang vị trí con trỏ chuột đang đứng.
-* **Xung đột dịch vụ `keyd` & `libinput`:** Máy sử dụng daemon `keyd` (gán Shift phải = Escape). `keyd` phát phím qua thiết bị ảo `keyd virtual keyboard`, khiến `libinput` coi bàn phím là thiết bị ngoại vi và **vô hiệu hóa tính năng tự khóa trackpad khi gõ phím** (*Disable-While-Typing*).
-* **Driver T2:** Driver trackpad T2 trên Linux (`tbtpd`) dễ phát sinh cảnh báo `libinput error: Touch jump detected and discarded`.
+Tài liệu này lưu trữ toàn bộ các sự cố và giải pháp đã được kiểm nghiệm thực tế trên chính chiếc máy **MacBook Pro 15,2 (T2)** này:
 
-### ✅ Giải pháp chuẩn bắt buộc: TẮT HOÀN TOÀN `tap-to-click`
-Người dùng **không dùng `tap-to-click`**. Giải pháp triệt để là tắt tính năng chạm nhẹ để click, đồng thời vẫn cho phép trackpad hoạt động song song với chuột ngoài:
+### 1. Touch Bar Bị Hỏng Phần Cứng → Gán Phím Esc Bằng `keyd` (Shift Phải = Esc)
+* **Đặc thù phần cứng:** Dải OLED Touch Bar của máy bị hỏng hoàn toàn (không sáng, không phản hồi). Dòng MacBook Pro 2018–2019 không có phím `Esc` vật lý, nên khi Touch Bar hỏng sẽ **mất hoàn toàn phím Escape** (rất bất tiện trong Terminal, Vim, hủy tiến trình).
+* **Giải pháp chuẩn:** Hệ thống sử dụng daemon `keyd` để gán phím **Right Shift (Shift phải)** thành phím **Escape (`Esc`)**:
+  ```bash
+  sudo apt install -y keyd
+  sudo mkdir -p /etc/keyd
+  sudo tee /etc/keyd/default.conf <<'EOF'
+  [ids]
+  *
 
-```bash
-# 1. Tắt vĩnh viễn tính năng chạm nhẹ để click (bắt buộc)
-gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click false
+  [main]
+  rightshift = escape
+  EOF
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now keyd
+  ```
+  *(Script `hardware/t2-mac/install_t2_drivers.sh` đã tự động hóa việc này khi restore).*
 
-# 2. Cho phép trackpad hoạt động bình thường (song song chuột ngoài)
-gsettings set org.gnome.desktop.peripherals.touchpad send-events 'enabled'
-```
+### 2. Gõ Bàn Phím Bị Nhảy Chữ / Con Trỏ Chuột Tự Nhảy → Tắt `tap-to-click`
+* **Nguyên nhân:** Mặt Trackpad của MacBook Pro rất lớn. Khi gõ phím, lòng bàn tay quẹt nhẹ qua mặt kính. Tính năng `tap-to-click` kích hoạt click chuột ngẫu nhiên làm nhảy con trỏ soạn thảo sang vị trí khác; đồng thời `keyd virtual keyboard` vô hiệu hóa tính năng tự ngắt trackpad khi gõ (*Disable-While-Typing*).
+* **Giải pháp chuẩn (Không dùng tap-to-click):**
+  ```bash
+  # Tắt vĩnh viễn tính năng chạm nhẹ để click
+  gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click false
 
-> [!IMPORTANT]
-> Sau khi cấu hình lệnh trên:
-> - Trackpad vẫn rê chuột và bấm click vật lý (*force touch click - ấn lún bàn rê xuống*) hoàn toàn bình thường.
-> - Khi gõ phím, lòng bàn tay tì hoặc quẹt qua mặt trackpad sẽ **100% không bị kích hoạt click**, chấm dứt triệt để lỗi nhảy chữ / nhảy con trỏ.
-> - Bộ gõ tiếng Việt `ibus-bamboo` hoạt động ổn định và chính xác mà không bị xung đột với con trỏ chuột.
+  # Cho phép trackpad hoạt động bình thường (song song cùng chuột ngoài)
+  gsettings set org.gnome.desktop.peripherals.touchpad send-events 'enabled'
+  ```
+  *(Trackpad vẫn rê chuột và click vật lý bằng cách ấn lún bàn rê xuống bình thường, nhưng lòng bàn tay chạm nhẹ khi gõ sẽ 100% không bị click làm nhảy chữ).*
 
----
+### 3. Mất Wi-Fi & Bluetooth Sau Khi Cài Mới Ubuntu
+* **Nguyên nhân:** Card mạng Broadcom trên chip T2 yêu cầu firmware độc quyền của Apple, Ubuntu gốc không đi kèm firmware này.
+* **Cách khắc phục:**
+  1. Kết nối internet tạm thời qua USB Tethering từ điện thoại (hoặc cắm USB Wi-Fi rời).
+  2. Chạy lệnh trích xuất firmware chính hãng:
+     ```bash
+     sudo get-apple-firmware get_from_online
+     ```
+  3. Khởi động lại máy: `sudo reboot`.
 
-## 🔲 Touch Bar Hỏng & Gán Phím Esc Bằng `keyd` (Shift Phải = Esc)
+### 4. Bàn Phím & Trackpad Không Nhận Sau Khi Cài Ubuntu Mặc Định
+* **Nguyên nhân:** Kernel mặc định của Ubuntu thiếu driver giao tiếp với chip bảo mật Apple T2.
+* **Cách khắc phục:**
+  1. Cài đặt kernel `linux-t2`:
+     ```bash
+     sudo bash hardware/t2-mac/install_t2_drivers.sh
+     ```
+  2. Khởi động lại máy vào kernel T2:
+     ```bash
+     sudo reboot
+     ```
 
-### ⚠️ Đặc thù phần cứng của máy hiện tại
-* **Touch Bar bị hỏng hoàn toàn:** Dải cảm ứng OLED Touch Bar của máy bị hỏng phần cứng (không sáng, không phản hồi).
-* **Mất phím Escape:** Dòng MacBook Pro 2018–2019 tích hợp phím `Esc` cảm ứng trên Touch Bar chứ không có nút bấm vật lý. Khi Touch Bar hỏng, máy hoàn toàn **không có phím `Esc`** để dùng (rất bất tiện trong Terminal, Vim, hủy tiến trình, đóng popup).
-
-### ✅ Giải pháp chuẩn: Dùng `keyd` đổi Shift bên phải thành Esc
-Hệ thống sử dụng daemon ánh xạ phím ở tầng kernel `keyd` để biến phím **Right Shift (Shift phải)** thành phím **Escape (`Esc`)**:
-
-1. **Cài đặt gói & tạo cấu hình:**
-   ```bash
-   sudo apt install -y keyd
-   sudo mkdir -p /etc/keyd
-   sudo tee /etc/keyd/default.conf <<'EOF'
-   [ids]
-   *
-
-   [main]
-   rightshift = escape
-   EOF
-   ```
-
-2. **Kích hoạt và chạy dịch vụ:**
-   ```bash
-   sudo systemctl daemon-reload
-   sudo systemctl enable --now keyd
-   ```
-
-3. **Kiểm tra trạng thái:**
-   ```bash
-   sudo systemctl status keyd
-   ```
-
-> [!TIP]
-> Script `hardware/t2-mac/install_t2_drivers.sh` và `sudo ./bin/restore_current_machine.sh` đã được tích hợp tự động cài đặt `keyd` và tạo file cấu hình này. Khi khôi phục lại máy, tính năng Shift phải = Esc sẽ tự động hoạt động ngay lập tức.
 
 

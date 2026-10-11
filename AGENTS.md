@@ -46,6 +46,9 @@ When a user asks to set up a machine, consult this matrix to pick the right comm
 ## 💡 Cross-Platform Reference & Troubleshooting
 
 When troubleshooting across environments:
+- For general server infrastructure issues (Nginx, Systemd, PostgreSQL, Redis, UFW, Network), read [`docs/server/troubleshooting.md`](file://docs/server/troubleshooting.md).
+- For machine-specific hardware issues (MacBook T2 driver/trackpad/Touch Bar, Lenovo desktop WOL), read that machine's runbook in [`docs/machines/`](file://docs/machines/).
 - For native gem compilation errors (`nokogiri`, `pg`, `libvips`, `openssl`), read [`docs/platform-guides/rails_troubleshooting_cross_platform.md`](file://docs/platform-guides/rails_troubleshooting_cross_platform.md).
 - For Ubuntu development apps (TablePlus AppImage, Warp, Cursor, Azure AKS), read [`docs/platform-guides/ubuntu_dev_guide.md`](file://docs/platform-guides/ubuntu_dev_guide.md).
 - For macOS background services and OrbStack/Docker, read [`docs/platform-guides/macos_dev_guide.md`](file://docs/platform-guides/macos_dev_guide.md).
+
