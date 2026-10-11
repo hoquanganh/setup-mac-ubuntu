@@ -1,10 +1,10 @@
 [Unit]
-Description=Run VN-MDM Health Check every 30 minutes
+Description=Run VN-MDM Health Check every 60 minutes
 Persistent=true
 
 [Timer]
 OnBootSec=5min
-OnUnitActiveSec=30min
+OnUnitActiveSec=60min
 Persistent=true
 
 [Install]

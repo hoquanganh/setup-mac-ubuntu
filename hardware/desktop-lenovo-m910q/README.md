@@ -157,7 +157,7 @@ Hệ thống đã được trang bị bộ công cụ bảo vệ dữ liệu to�
 | **`bin/health_check.sh`** | Kiểm tra 8 dịch vụ core, 5 cổng kết nối, dung lượng ổ cứng, cảnh báo sự cố | `./bin/health_check.sh` |
 | **`bin/send_alert_email.py`** | Gửi email thông báo qua Gmail SMTP (sử dụng mật khẩu ứng dụng của `vn-mdm-landing`) | `sudo ./bin/send_alert_email.py --test` |
 | **`vnmdm-backup.timer`** | Tự động chạy sao lưu lúc 02:00 sáng Chủ Nhật hàng tuần | `systemctl status vnmdm-backup.timer` |
-| **`vnmdm-healthcheck.timer`** | Tự động kiểm tra sức khoẻ hệ thống mỗi 30 phút, gửi email nếu có lỗi | `systemctl status vnmdm-healthcheck.timer` |
+| **`vnmdm-healthcheck.timer`** | Tự động kiểm tra sức khoẻ hệ thống mỗi 60 phút (1 tiếng), gửi email nếu có lỗi | `systemctl status vnmdm-healthcheck.timer` |
 
 ---
 

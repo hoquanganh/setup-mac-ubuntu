@@ -58,26 +58,20 @@ systemctl list-timers | grep vnmdm-backup
 
 Hệ thống sử dụng công cụ chuẩn công nghiệp **`rclone`** để đồng bộ file backup lên Google Drive.
 
-### Các bước liên kết tài khoản Google Drive:
-1. Chạy trình cấu hình với tư cách user chính:
-   ```bash
-   rclone config
-   ```
-2. Chọn:
-   - `n` (New remote)
-   - Name: `gdrive` *(Bắt buộc đặt tên là `gdrive` để script tự nhận diện)*
-   - Storage type: `drive` (hoặc nhập số tương ứng với Google Drive)
-   - Client ID & Client Secret: Để trống (ấn Enter) nếu dùng tài khoản cá nhân, hoặc nhập nếu có Google Cloud App riêng.
-   - Scope: chọn `1` (Full access to all files).
-   - root_folder_id: Để trống.
-   - service_account_file: Để trống.
-   - Edit advanced config: `n`.
-   - Use web browser to authenticate: `y` (trình duyệt sẽ mở ra để bạn đăng nhập Google và cấp quyền).
-3. Sau khi hoàn tất, kiểm tra kết nối:
-   ```bash
-   rclone lsd gdrive:
-   ```
-4. Từ lần backup kế tiếp, script sẽ tự động upload file `.tar.gz` và `.sha256` vào thư mục `gdrive:Backups/qa-server-m910q/`.
+### Trạng thái hiện tại:
+> [!NOTE]
+> **Remote `gdrive:` đã được cấu hình và xác thực thành công!**
+> Các bản backup đã và đang tự động đồng bộ trực tiếp lên thư mục:
+> `gdrive:Backups/qa-server-m910q/`
+
+### Nếu sau này muốn kết nối lại hoặc đổi tài khoản Google Drive:
+Chỉ cần chạy 1 lệnh duy nhất (không cần nhập thủ công từng bước):
+```bash
+rclone config reconnect gdrive:
+```
+1. Trình duyệt Chrome sẽ tự động mở trang xác thực tài khoản Google.
+2. Chọn tài khoản Google Drive và ấn **"Cho phép / Allow"**.
+3. Rclone sẽ tự động lưu token mới và tiếp tục đồng bộ bình thường.
 
 ---
 
@@ -94,7 +88,7 @@ Tự động kế thừa thông tin Google App Password có sẵn tại `/etc/vn
 ### Các trường hợp kích hoạt cảnh báo:
 1. **Khi tiến trình Backup gặp lỗi:** Trap lỗi tự động bắt mã lệnh, số dòng bị lỗi và gửi email đỏ `[ERROR] Weekly Backup FAILED`.
 2. **Khi dịch vụ hệ thống bị tắt hoặc chết cổng (Health Monitor):**
-   - File giám sát [`bin/health_check.sh`](file:///home/quanganhho/dev/setup-mac-ubuntu/bin/health_check.sh) chạy ngầm mỗi 30 phút qua timer `vnmdm-healthcheck.timer`.
+   - File giám sát [`bin/health_check.sh`](file:///home/quanganhho/dev/setup-mac-ubuntu/bin/health_check.sh) chạy ngầm mỗi 60 phút (1 tiếng) qua timer `vnmdm-healthcheck.timer`.
    - Giám sát 8 dịch vụ: `vnmdm-backend`, `vnmdm-worker`, `vnmdm-frontend`, `vn-mdm-landing`, `cloudflared`, `cloudflared-landing`, `nginx`, `postgresql`.
    - Giám sát 5 cổng: `3000`, `3001`, `4321`, `80`, `5432`.
    - Giám sát dung lượng ổ cứng (cảnh báo khi dung lượng đĩa > 90%).
