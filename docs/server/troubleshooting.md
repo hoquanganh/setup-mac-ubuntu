@@ -36,3 +36,23 @@
   ```bash
   ss -tulpn | grep -E "80|3000|3001"
   ```
+
+---
+
+## 4. Gõ Phím Bị Nhảy Chữ / Con Trỏ Chuột Tự Nhảy Vị Trí (MacBook T2)
+* **Triệu chứng:** Khi đang gõ phím (tiếng Việt hoặc tiếng Anh), con trỏ soạn thảo bị giật sang vị trí khác, chữ bị chèn lung tung hoặc xóa đè ký tự cũ; đôi khi con trỏ chuột tự nhảy trên màn hình.
+* **Nguyên nhân:**
+  1. Mặt Trackpad MacBook lớn, khi gõ phím lòng bàn tay dễ quẹt vào bề mặt kính.
+  2. Tính năng `tap-to-click` đang bật (`true`) biến mọi va chạm nhẹ của lòng bàn tay thành một cú click chuột ngẫu nhiên.
+  3. Dịch vụ `keyd` (gán phím) tạo bàn phím ảo khiến `libinput` mất khả năng tự ngắt trackpad khi gõ (*Disable-While-Typing*).
+* **Cách khắc phục triệt để (Không dùng tap-to-click):**
+  1. Tắt tính năng chạm nhẹ để click:
+     ```bash
+     gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click false
+     ```
+  2. Đảm bảo trackpad vẫn hoạt động song song với chuột ngoài:
+     ```bash
+     gsettings set org.gnome.desktop.peripherals.touchpad send-events 'enabled'
+     ```
+  *(Trackpad vẫn rê chuột và bấm click vật lý bằng cách ấn lún bàn rê xuống hoàn toàn bình thường, nhưng lòng bàn tay chạm nhẹ khi gõ sẽ 100% không bị click làm nhảy chữ).*
+

@@ -27,3 +27,4 @@ Guide the AI Agent to inspect hardware capabilities, choose appropriate driver p
 4. **Verification**:
    - Verify kernel: `uname -r`
    - Verify power lid ignore settings: `cat /etc/systemd/logind.conf | grep HandleLidSwitch`
+   - Verify trackpad anti-jump (T2 Mac): Ensure `tap-to-click` is disabled (`gsettings get org.gnome.desktop.peripherals.touchpad tap-to-click` returns `false`) and `send-events` is `enabled`.

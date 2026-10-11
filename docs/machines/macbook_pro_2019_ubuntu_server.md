@@ -80,3 +80,32 @@ journalctl -u ngrok-vnmdm -f
 sudo systemctl restart vnmdm-backend
 sudo systemctl restart vnmdm-frontend
 ```
+
+---
+
+## ⌨️ Cấu Hình Trackpad, Bàn Phím & Bộ Gõ Tiếng Việt (Chống Nhảy Chữ)
+
+### ⚠️ Triệu chứng & Nguyên nhân lỗi nhảy chữ trên MacBook T2
+Khi gõ văn bản (tiếng Việt hoặc tiếng Anh), chữ có thể bị nhảy lung tung, mất ký tự, chèn sai vị trí hoặc con trỏ chuột tự nhảy đi chỗ khác:
+* **Mặt Trackpad MacBook quá lớn:** Khi đặt tay gõ phím, lòng bàn tay / gò ngón cái tự nhiên tì hoặc quẹt lướt qua mặt trackpad.
+* **Tính năng `tap-to-click`:** Nếu bật `tap-to-click` (chạm nhẹ mặt kính là click), mọi va chạm nhẹ từ lòng bàn tay đều bị nhận diện là một cú click chuột, khiến con trỏ soạn thảo nhảy sang vị trí con trỏ chuột đang đứng.
+* **Xung đột dịch vụ `keyd` & `libinput`:** Máy sử dụng daemon `keyd` (gán Shift phải = Escape). `keyd` phát phím qua thiết bị ảo `keyd virtual keyboard`, khiến `libinput` coi bàn phím là thiết bị ngoại vi và **vô hiệu hóa tính năng tự khóa trackpad khi gõ phím** (*Disable-While-Typing*).
+* **Driver T2:** Driver trackpad T2 trên Linux (`tbtpd`) dễ phát sinh cảnh báo `libinput error: Touch jump detected and discarded`.
+
+### ✅ Giải pháp chuẩn bắt buộc: TẮT HOÀN TOÀN `tap-to-click`
+Người dùng **không dùng `tap-to-click`**. Giải pháp triệt để là tắt tính năng chạm nhẹ để click, đồng thời vẫn cho phép trackpad hoạt động song song với chuột ngoài:
+
+```bash
+# 1. Tắt vĩnh viễn tính năng chạm nhẹ để click (bắt buộc)
+gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click false
+
+# 2. Cho phép trackpad hoạt động bình thường (song song chuột ngoài)
+gsettings set org.gnome.desktop.peripherals.touchpad send-events 'enabled'
+```
+
+> [!IMPORTANT]
+> Sau khi cấu hình lệnh trên:
+> - Trackpad vẫn rê chuột và bấm click vật lý (*force touch click - ấn lún bàn rê xuống*) hoàn toàn bình thường.
+> - Khi gõ phím, lòng bàn tay tì hoặc quẹt qua mặt trackpad sẽ **100% không bị kích hoạt click**, chấm dứt triệt để lỗi nhảy chữ / nhảy con trỏ.
+> - Bộ gõ tiếng Việt `ibus-bamboo` hoạt động ổn định và chính xác mà không bị xung đột với con trỏ chuột.
+

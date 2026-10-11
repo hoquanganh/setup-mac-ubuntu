@@ -55,6 +55,26 @@ if [ ! -f /lib/firmware/brcm/brcmfmac4364b3-pcie.bin ] && \
   get-apple-firmware -i get_from_online || warn "Firmware extraction failed. Execute manually: sudo get-apple-firmware get_from_online"
 else
   log "Wi-Fi firmware already present."
+# Configure Trackpad: Disable tap-to-click to prevent palm contact from jumping the cursor while typing
+log "Configuring Apple T2 Trackpad: disabling tap-to-click (prevents palm jumping cursor)..."
+mkdir -p /etc/dconf/profile /etc/dconf/db/local.d
+if [ ! -f /etc/dconf/profile/user ]; then
+  cat <<'EOF' > /etc/dconf/profile/user
+user-db:user
+system-db:local
+EOF
+fi
+
+cat <<'EOF' > /etc/dconf/db/local.d/01-touchpad
+[org/gnome/desktop/peripherals/touchpad]
+tap-to-click=false
+send-events='enabled'
+EOF
+dconf update 2>/dev/null || true
+
+if [ -n "$SUDO_USER" ]; then
+  su - "$SUDO_USER" -c "gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click false 2>/dev/null; gsettings set org.gnome.desktop.peripherals.touchpad send-events 'enabled' 2>/dev/null" || true
 fi
 
 log "T2 Mac hardware setup finished."
+
