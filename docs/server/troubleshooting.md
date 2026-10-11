@@ -56,3 +56,24 @@
      ```
   *(Trackpad vẫn rê chuột và bấm click vật lý bằng cách ấn lún bàn rê xuống hoàn toàn bình thường, nhưng lòng bàn tay chạm nhẹ khi gõ sẽ 100% không bị click làm nhảy chữ).*
 
+---
+
+## 5. Mất Phím Escape Do Touch Bar Bị Hỏng (MacBook T2)
+* **Triệu chứng:** Không thể bấm phím `Esc` khi dùng Vim, Terminal hoặc đóng cửa sổ do dải cảm ứng Touch Bar bị hỏng phần cứng.
+* **Cách khắc phục:** Cài đặt daemon `keyd` để gán phím **Shift bên phải (Right Shift)** thành **Escape (`Esc`)**:
+  ```bash
+  sudo apt install -y keyd
+  sudo mkdir -p /etc/keyd
+  sudo tee /etc/keyd/default.conf <<'EOF'
+  [ids]
+  *
+
+  [main]
+  rightshift = escape
+  EOF
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now keyd
+  ```
+  *(Sau khi chạy, phím Shift bên phải sẽ hoạt động như phím Esc).*
+
+

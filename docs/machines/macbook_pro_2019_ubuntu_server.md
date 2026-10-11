@@ -109,3 +109,42 @@ gsettings set org.gnome.desktop.peripherals.touchpad send-events 'enabled'
 > - Khi gõ phím, lòng bàn tay tì hoặc quẹt qua mặt trackpad sẽ **100% không bị kích hoạt click**, chấm dứt triệt để lỗi nhảy chữ / nhảy con trỏ.
 > - Bộ gõ tiếng Việt `ibus-bamboo` hoạt động ổn định và chính xác mà không bị xung đột với con trỏ chuột.
 
+---
+
+## 🔲 Touch Bar Hỏng & Gán Phím Esc Bằng `keyd` (Shift Phải = Esc)
+
+### ⚠️ Đặc thù phần cứng của máy hiện tại
+* **Touch Bar bị hỏng hoàn toàn:** Dải cảm ứng OLED Touch Bar của máy bị hỏng phần cứng (không sáng, không phản hồi).
+* **Mất phím Escape:** Dòng MacBook Pro 2018–2019 tích hợp phím `Esc` cảm ứng trên Touch Bar chứ không có nút bấm vật lý. Khi Touch Bar hỏng, máy hoàn toàn **không có phím `Esc`** để dùng (rất bất tiện trong Terminal, Vim, hủy tiến trình, đóng popup).
+
+### ✅ Giải pháp chuẩn: Dùng `keyd` đổi Shift bên phải thành Esc
+Hệ thống sử dụng daemon ánh xạ phím ở tầng kernel `keyd` để biến phím **Right Shift (Shift phải)** thành phím **Escape (`Esc`)**:
+
+1. **Cài đặt gói & tạo cấu hình:**
+   ```bash
+   sudo apt install -y keyd
+   sudo mkdir -p /etc/keyd
+   sudo tee /etc/keyd/default.conf <<'EOF'
+   [ids]
+   *
+
+   [main]
+   rightshift = escape
+   EOF
+   ```
+
+2. **Kích hoạt và chạy dịch vụ:**
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now keyd
+   ```
+
+3. **Kiểm tra trạng thái:**
+   ```bash
+   sudo systemctl status keyd
+   ```
+
+> [!TIP]
+> Script `hardware/t2-mac/install_t2_drivers.sh` và `sudo ./bin/restore_current_machine.sh` đã được tích hợp tự động cài đặt `keyd` và tạo file cấu hình này. Khi khôi phục lại máy, tính năng Shift phải = Esc sẽ tự động hoạt động ngay lập tức.
+
+

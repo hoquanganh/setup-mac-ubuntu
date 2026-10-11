@@ -55,7 +55,9 @@ if [ ! -f /lib/firmware/brcm/brcmfmac4364b3-pcie.bin ] && \
   get-apple-firmware -i get_from_online || warn "Firmware extraction failed. Execute manually: sudo get-apple-firmware get_from_online"
 else
   log "Wi-Fi firmware already present."
-# Configure Trackpad: Disable tap-to-click to prevent palm contact from jumping the cursor while typing
+fi
+
+# 1. Configure Trackpad: Disable tap-to-click to prevent palm contact from jumping the cursor while typing
 log "Configuring Apple T2 Trackpad: disabling tap-to-click (prevents palm jumping cursor)..."
 mkdir -p /etc/dconf/profile /etc/dconf/db/local.d
 if [ ! -f /etc/dconf/profile/user ]; then
@@ -76,5 +78,25 @@ if [ -n "$SUDO_USER" ]; then
   su - "$SUDO_USER" -c "gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click false 2>/dev/null; gsettings set org.gnome.desktop.peripherals.touchpad send-events 'enabled' 2>/dev/null" || true
 fi
 
+# 2. Touch Bar hardware failure workaround: Remap Right Shift to Esc via keyd
+log "Configuring keyd: remapping Right Shift to Esc (Touch Bar hardware failure workaround)..."
+if ! dpkg -l keyd 2>/dev/null | grep -q '^ii'; then
+  apt install -y keyd
+fi
+
+mkdir -p /etc/keyd
+cat <<'EOF' > /etc/keyd/default.conf
+[ids]
+*
+
+[main]
+rightshift = escape
+EOF
+
+systemctl daemon-reload
+systemctl enable keyd
+systemctl restart keyd || warn "Failed to restart keyd service."
+
 log "T2 Mac hardware setup finished."
+
 

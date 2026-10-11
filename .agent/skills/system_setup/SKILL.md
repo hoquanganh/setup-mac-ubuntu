@@ -11,7 +11,7 @@ Guide the AI Agent to inspect hardware capabilities, choose appropriate driver p
 ## Hardware Classification Matrix
 | Hardware Category | Detection Signature | Required Action |
 |---|---|---|
-| **Apple T2 MacBook** (2018-2020) | `sys_vendor` contains "Apple", `product_name` contains "MacBookPro15" | Run `hardware/t2-mac/install_t2_drivers.sh`, reboot if fresh kernel installed. |
+| **Apple T2 MacBook** (2018-2020) | `sys_vendor` contains "Apple", `product_name` contains "MacBookPro15" | Run `hardware/t2-mac/install_t2_drivers.sh` (includes T2 kernel, Wi-Fi, trackpad anti-jump, and `keyd` Right Shift -> Esc remapping for broken Touch Bar), reboot if fresh kernel installed. |
 | **Generic Laptop** | `chassis_type` is 9 or 10, non-Apple | Run `hardware/laptop-power/configure_power.sh`. |
 | **Desktop / NUC / Mini PC / VPS** | `chassis_type` is 3, 6, 7, or Cloud VM | Skip custom kernels & lid power management. |
 
@@ -28,3 +28,5 @@ Guide the AI Agent to inspect hardware capabilities, choose appropriate driver p
    - Verify kernel: `uname -r`
    - Verify power lid ignore settings: `cat /etc/systemd/logind.conf | grep HandleLidSwitch`
    - Verify trackpad anti-jump (T2 Mac): Ensure `tap-to-click` is disabled (`gsettings get org.gnome.desktop.peripherals.touchpad tap-to-click` returns `false`) and `send-events` is `enabled`.
+   - Verify keyd remap (T2 Mac with broken Touch Bar): Ensure `keyd` service is active (`systemctl is-active keyd`) so Right Shift functions as Escape.
+
