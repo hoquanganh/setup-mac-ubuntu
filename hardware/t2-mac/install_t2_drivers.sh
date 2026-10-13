@@ -97,6 +97,15 @@ systemctl daemon-reload
 systemctl enable keyd
 systemctl restart keyd || warn "Failed to restart keyd service."
 
+# 3. Workaround: Prevent NetworkManager from repeatedly attempting DHCP on Apple T2 virtual ethernet (iBridge CDC NCM)
+log "Configuring NetworkManager: ignoring Apple T2 internal virtual Ethernet (ac:de:48:00:11:22)..."
+mkdir -p /etc/NetworkManager/conf.d
+cat <<'EOF' > /etc/NetworkManager/conf.d/10-ignore-apple-t2-ethernet.conf
+[keyfile]
+unmanaged-devices=mac:ac:de:48:00:11:22
+EOF
+systemctl reload NetworkManager 2>/dev/null || true
+
 log "T2 Mac hardware setup finished."
 
 

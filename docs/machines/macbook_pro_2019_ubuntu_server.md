@@ -19,7 +19,7 @@ sudo ./bin/restore_current_machine.sh
 ```
 
 Script sẽ tự động hoàn tất 100% mọi thứ qua 9 bước:
-1. **Phần cứng T2:** Cài kernel `linux-t2`, trích xuất firmware Wi-Fi/Bluetooth từ máy chủ Apple, kích hoạt bàn phím, trackpad chống nhảy chữ (tắt `tap-to-click`), và kích hoạt `keyd` (gán Shift phải = Esc do Touch Bar hỏng).
+1. **Phần cứng T2:** Cài kernel `linux-t2`, trích xuất firmware Wi-Fi/Bluetooth từ máy chủ Apple, kích hoạt bàn phím, trackpad chống nhảy chữ (tắt `tap-to-click`), kích hoạt `keyd` (gán Shift phải = Esc do Touch Bar hỏng), và bỏ qua card mạng ảo T2 (`ac:de:48:00:11:22`) để tránh thông báo lỗi "Connection failed" liên tục.
 2. **Nguồn điện:** Chống sleep khi gập nắp máy (`HandleLidSwitch=ignore`, mask toàn bộ `sleep.target`, `suspend.target`).
 3. **Cơ sở dữ liệu:** Cài đặt và cấu hình PostgreSQL (`vnmdm` / `vnmdm`) và Redis.
 4. **Môi trường chạy:** Node.js 22, Ruby (rbenv), Docker.
