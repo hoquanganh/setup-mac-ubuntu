@@ -1,0 +1,11 @@
+[Unit]
+Description=Wi-Fi Dropout Watchdog and Automated Failover
+After=network.target NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/home/quanganhho/dev/setup-mac-ubuntu/bin/wifi_failover_watchdog.sh
+StandardOutput=journal
+StandardError=journal

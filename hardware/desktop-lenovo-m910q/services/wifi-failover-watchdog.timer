@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Wi-Fi Watchdog every minute to prevent dropouts and auto-failover
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

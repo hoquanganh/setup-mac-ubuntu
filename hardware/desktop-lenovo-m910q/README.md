@@ -156,6 +156,8 @@ Hệ thống đã được trang bị bộ công cụ bảo vệ dữ liệu to�
 | **`bin/restore_system_data.sh`** | Khôi phục 100% dữ liệu sống và cấu hình sau khi cài mới OS | `sudo bash bin/restore_system_data.sh [file.tar.gz]` |
 | **`bin/health_check.sh`** | Kiểm tra 8 dịch vụ core, 5 cổng kết nối, dung lượng ổ cứng, cảnh báo sự cố | `./bin/health_check.sh` |
 | **`bin/send_alert_email.py`** | Gửi email thông báo qua Gmail SMTP (sử dụng mật khẩu ứng dụng của `vn-mdm-landing`) | `sudo ./bin/send_alert_email.py --test` |
+| **`bin/wifi_failover_watchdog.sh`** | Tự động phát hiện rớt mạng / đơ Wi-Fi, chuyển dự phòng giữa `QA` và `FPT Telecom-E971-IOT`, tắt powersave | `sudo bash bin/wifi_failover_watchdog.sh` |
+| **`wifi-failover-watchdog.timer`** | Chạy giám sát kết nối Internet mỗi phút 1 lần, tự động failover ngay khi phát hiện sự cố | `systemctl status wifi-failover-watchdog.timer` |
 | **`vnmdm-backup.timer`** | Tự động chạy sao lưu lúc 02:00 sáng Chủ Nhật hàng tuần | `systemctl status vnmdm-backup.timer` |
 | **`vnmdm-healthcheck.timer`** | Tự động kiểm tra sức khoẻ hệ thống mỗi 60 phút (1 tiếng), gửi email nếu có lỗi | `systemctl status vnmdm-healthcheck.timer` |
 

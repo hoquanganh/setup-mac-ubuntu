@@ -56,4 +56,32 @@ if command -v ethtool &>/dev/null; then
   fi
 fi
 
+# 5. Disable Wi-Fi Power Save & Install Watchdog Failover Service
+log "Configuring Wi-Fi power management & watchdog..."
+mkdir -p /etc/NetworkManager/conf.d/
+cat <<EOF > /etc/NetworkManager/conf.d/99-disable-wifi-powersave.conf
+[connection]
+wifi.powersave = 2
+EOF
+if [ -f /etc/NetworkManager/conf.d/default-wifi-powersave-on.conf ]; then
+  sed -i "s/wifi.powersave = 3/wifi.powersave = 2/g" /etc/NetworkManager/conf.d/default-wifi-powersave-on.conf 2>/dev/null || true
+fi
+systemctl reload NetworkManager 2>/dev/null || true
+
+# Turn off power management on current Wi-Fi interface if present
+if command -v iwconfig &>/dev/null; then
+  iwconfig wlp2s0 power off 2>/dev/null || true
+fi
+
+# Install and enable wifi-failover-watchdog
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WATCHDOG_SVC="$SCRIPT_DIR/services/wifi-failover-watchdog.service"
+WATCHDOG_TIMER="$SCRIPT_DIR/services/wifi-failover-watchdog.timer"
+if [ -f "$WATCHDOG_SVC" ] && [ -f "$WATCHDOG_TIMER" ]; then
+  cp "$WATCHDOG_SVC" "$WATCHDOG_TIMER" /etc/systemd/system/
+  systemctl daemon-reload
+  systemctl enable --now wifi-failover-watchdog.timer 2>/dev/null || true
+  log "Enabled wifi-failover-watchdog.timer."
+fi
+
 log "Desktop hardware optimization complete."
