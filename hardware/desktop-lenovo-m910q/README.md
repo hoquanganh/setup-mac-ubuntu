@@ -166,7 +166,7 @@ Hệ thống đã được trang bị bộ công cụ bảo vệ dữ liệu to�
 ## 🚀 7. Hướng dẫn Chạy
 
 ```bash
-# 1. Tối ưu hoá phần cứng M910q (chống sleep, bật WOL):
+# 1. Tối ưu hoá phần cứng M910q (chống sleep, bật WOL, chống bão log PCIe AER):
 sudo bash hardware/desktop-lenovo-m910q/configure_desktop.sh
 
 # 2. Chạy kịch bản kiểm tra và thiết lập môi trường idempotent:
@@ -175,4 +175,18 @@ sudo bash hardware/desktop-lenovo-m910q/setup_m910q_environment.sh
 # 3. Tạo ngay bản sao lưu dữ liệu đầu tiên:
 sudo bash bin/backup_system_data.sh --notify-email
 ```
+
+---
+
+## 🛠️ 8. Sự cố Phần cứng Đặc thù & Phòng ngừa Bão Log (PCIe AER)
+
+### Lỗi Bão Log PCIe Correctable Error từ Card Wi-Fi Intel 7265
+Trên Lenovo M910q cắm card Wi-Fi M.2 Intel Wireless 7265 (`00:1c.0`), tầng vật lý PCIe có thể gửi liên tục các tín hiệu lỗi sửa được (`PCIe Bus Error: severity=Correctable, type=Physical Layer, RxErr`). Card vẫn hoạt động bình thường nhưng Linux kernel mặc định ghi hàng trăm ngàn dòng lỗi vào `/var/log/kern.log`, `/var/log/syslog` và `systemd-journald`, gây tốn đĩa và hại SSD.
+
+**Giải pháp đã tích hợp:**
+1. **Lọc trong Rsyslog (`/etc/rsyslog.d/10-suppress-pcie-aer.conf`)**: Ngăn rsyslog ghi log lỗi PCIe AER ra đĩa.
+2. **Khống chế trần Systemd Journal (`/etc/systemd/journald.conf.d/00-size-limit.conf`)**: Cố định trần `SystemMaxUse=1G` (mặc định cho phép chiếm tới 4GB).
+3. **Thêm `pci=noaer` vào GRUB (`/etc/default/grub`)**: Triệt tiêu ghi nhận lỗi AER ở tầng kernel vĩnh viễn khi máy khởi động lại.
+4. **Logrotate cho MongoDB & Rsyslog**: Thêm cấu hình xoay vòng log MongoDB và đặt giới hạn `maxsize 200M` cho rsyslog.
+
 

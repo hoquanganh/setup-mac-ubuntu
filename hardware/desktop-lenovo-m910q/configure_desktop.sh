@@ -84,4 +84,50 @@ if [ -f "$WATCHDOG_SVC" ] && [ -f "$WATCHDOG_TIMER" ]; then
   log "Enabled wifi-failover-watchdog.timer."
 fi
 
+# 6. Suppress Wi-Fi PCIe AER log storms & configure journald / log rotation limits
+log "Configuring log protection (PCIe AER suppression & journald limits)..."
+
+# Suppress Intel 7265 PCIe correctable bus errors in rsyslog
+mkdir -p /etc/rsyslog.d
+cat <<'EOF' > /etc/rsyslog.d/10-suppress-pcie-aer.conf
+# Suppress PCIe AER correctable errors from Intel 7265 Wi-Fi root port (00:1c.0)
+:msg, contains, "PCIe Bus Error" stop
+:msg, contains, "AER: Correctable error message" stop
+:msg, contains, "RxErr" stop
+EOF
+systemctl restart rsyslog 2>/dev/null || true
+
+# Limit systemd journal disk usage
+mkdir -p /etc/systemd/journald.conf.d
+cat <<'EOF' > /etc/systemd/journald.conf.d/00-size-limit.conf
+[Journal]
+SystemMaxUse=1G
+RuntimeMaxUse=200M
+EOF
+systemctl restart systemd-journald 2>/dev/null || true
+
+# Configure MongoDB logrotate if mongodb is present
+if [ -d /var/log/mongodb ]; then
+  cat <<'EOF' > /etc/logrotate.d/mongodb
+/var/log/mongodb/*.log {
+    weekly
+    maxsize 100M
+    rotate 4
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}
+EOF
+fi
+
+# Add pci=noaer to GRUB if not present
+if [ -f /etc/default/grub ] && ! grep -q "pci=noaer" /etc/default/grub; then
+  log "Adding pci=noaer to GRUB kernel parameters to permanently suppress PCIe AER noise..."
+  sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="pci=noaer /' /etc/default/grub
+  update-grub 2>/dev/null || true
+fi
+
 log "Desktop hardware optimization complete."
+
